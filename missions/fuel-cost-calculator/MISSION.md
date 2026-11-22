@@ -19,6 +19,13 @@ Open it from the hub, put your real MPG and the pump price in, and tick your wor
 - Monthly = weekly × 52 ÷ 12
 
 ## Ideas for v2
-- Compare against an electric car (pence per kWh, miles per kWh)
 - Track actual fill-ups to work out your real MPG
 - Split by different journeys (work, gym, weekend)
+
+## Update — 2026-11-22
+- **Asked:** Add a yearly total and a toggle between my car and a hypothetical electric car.
+- Yearly total moved up into the headline next to the monthly figure, so it's big and obvious.
+- New ⛽ My car / ⚡ Electric toggle. Electric mode has its own inputs (miles per kWh, pence per kWh, defaulting to 3.5 and 25p) with tips on typical values, and switches the whole page to green.
+- New "Your car vs electric" panel with yearly cost bars and a verdict line showing how much a year electric would save, or cost.
+- The what-if slider now follows whichever mode you're in (fuel or electricity price).
+- Running costs only: doesn't include buying the car, insurance, tax or servicing.

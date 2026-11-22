@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orion Workshop — Hub</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--line:#1c2b48;--cyan:#3ee6ff;--text:#d8e6ff;--dim:#7d93b8}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;
+background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:900px;margin:0 auto;padding:28px 16px 80px}
+.tag{font:600 12px ui-monospace,Consolas,monospace;letter-spacing:.2em;color:var(--cyan)}
+h1{font:800 clamp(30px,7vw,48px)/1.05 system-ui,sans-serif;margin:6px 0 4px}
+h1 span{color:var(--cyan);text-shadow:0 0 22px rgba(62,230,255,.5)}
+p.sub{color:var(--dim);margin:0 0 22px}
+input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--text);font-size:16px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+a.card{display:block;text-decoration:none;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;transition:border-color .2s,transform .2s}
+a.card:hover,a.card:focus{border-color:var(--cyan);transform:translateY(-2px)}
+.card b{display:block;font-size:17px;margin-bottom:4px}
+.card small{color:var(--dim)}
+.card time{display:block;margin-top:8px;font:12px ui-monospace,Consolas,monospace;color:var(--cyan)}
+.empty{color:var(--dim);border:1px dashed var(--line);border-radius:14px;padding:20px;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="tag">// ORION WORKSHOP</div>
+  <h1>THE <span>HUB</span></h1>
+  <p class="sub">Everything Claude has built for Rob. Works on phone, Tab and PC.</p>
+  <input id="q" type="search" placeholder="Search tools…" aria-label="Search tools">
+  <div class="grid" id="grid">
+<!-- MISSIONS:START -->
+<!-- MISSIONS:END -->
+  </div>
+  <p class="empty" id="empty" hidden>Nothing here yet. Send your first mission from the Claude app.</p>
+</div>
+<script>
+(function(){
+  var cards=[].slice.call(document.querySelectorAll('#grid .card'));
+  var empty=document.getElementById('empty');
+  if(!cards.length){empty.hidden=false;}
+  document.getElementById('q').addEventListener('input',function(){
+    var t=this.value.toLowerCase(),shown=0;
+    cards.forEach(function(c){var m=c.textContent.toLowerCase().indexOf(t)>-1;c.style.display=m?'':'none';if(m)shown++;});
+    empty.hidden=shown>0;
+    empty.textContent=cards.length?'No tools match that search.':'Nothing here yet. Send your first mission from the Claude app.';
+  });
+})();
+</script>
+<!-- Card template for Claude (copy inside the MISSIONS block, newest first):
+<a class="card" href="missions/NAME/"><b>Tool name</b><small>One-line description</small><time>YYYY-MM-DD</time></a>
+-->
+</body>
+</html>

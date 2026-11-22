@@ -22,6 +22,9 @@ a.card:hover,a.card:focus{border-color:var(--cyan);transform:translateY(-2px)}
 .card small{color:var(--dim)}
 .card time{display:block;margin-top:8px;font:12px ui-monospace,Consolas,monospace;color:var(--cyan)}
 .empty{color:var(--dim);border:1px dashed var(--line);border-radius:14px;padding:20px;text-align:center}
+.hq{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;background:linear-gradient(135deg,#0b2236,#0b1220);border:1px solid #1f4a5e;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 0 24px rgba(62,230,255,.12)}
+.hq .orb{flex:0 0 54px;height:54px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#bff6ff 0,#3ee6ff 18%,#0b6f8f 48%,#04202e 75%);box-shadow:0 0 22px rgba(62,230,255,.55)}
+.hq b{display:block;font-size:19px}.hq small{color:var(--dim)}
 </style>
 </head>
 <body>
@@ -29,6 +32,7 @@ a.card:hover,a.card:focus{border-color:var(--cyan);transform:translateY(-2px)}
   <div class="tag">// ORION WORKSHOP</div>
   <h1>THE <span>HUB</span></h1>
   <p class="sub">Everything Claude has built for Rob. Works on phone, Tab and PC.</p>
+  <a class="hq" href="https://claude.ai/artifact/FMDgfVWRKrKcDhDJZiXEhM"><span class="orb" aria-hidden="true"></span><span><b>Talk to Orion HQ →</b><small>Your voice assistant: logs your stuff, knows your day, syncs everywhere. Opens on claude.ai.</small></span></a>
   <input id="q" type="search" placeholder="Search tools…" aria-label="Search tools">
   <div class="grid" id="grid">
 <!-- MISSIONS:START -->

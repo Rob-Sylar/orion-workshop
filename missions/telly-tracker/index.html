@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Telly Tracker — Orion Workshop</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--panel2:#0f1a2e;--line:#1c2b48;--cyan:#3ee6ff;--amber:#ffb547;--green:#4dff9a;--red:#ff5d6c;--text:#d8e6ff;--dim:#7d93b8;--mono:ui-monospace,Consolas,monospace;--acc:var(--cyan)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+a.back{color:var(--dim);text-decoration:none;font:13px var(--mono)}
+.tag{font:600 12px var(--mono);letter-spacing:.2em;color:var(--acc);margin-top:14px;text-transform:uppercase}
+h1{font:800 clamp(28px,8vw,42px)/1.05 system-ui,sans-serif;margin:6px 0 4px;text-transform:uppercase}
+h1 span{color:var(--acc);text-shadow:0 0 20px var(--acc)}
+h2{font:800 19px/1.25 system-ui,sans-serif;margin:0 0 10px}
+h3{font:700 16px system-ui;margin:0 0 6px}
+p.sub{color:var(--dim);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+label.f{display:block;font:600 12px var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);font:16px system-ui,sans-serif;padding:12px;min-height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(62,230,255,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border:0;border-radius:10px;background:var(--acc);color:#021018;font:800 15px system-ui;cursor:pointer}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+.btn.small{min-height:36px;padding:0 12px;font-size:13px}
+.btn.danger{background:none;border:1px solid #5a2030;color:var(--red)}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{display:block;font:600 11px var(--mono);letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.stat b{font:800 22px system-ui;color:var(--acc)}
+.bar{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px var(--acc);transition:width .4s}
+.prog{display:flex;justify-content:space-between;font:600 13px var(--mono);color:var(--dim);margin-bottom:6px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{appearance:none;flex:0 0 26px;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;margin-top:1px;cursor:pointer;position:relative;background:#06101c}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+.chk.done span{color:var(--dim);text-decoration:line-through}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{flex:0 0 auto;min-height:42px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--dim);font:700 14px system-ui;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#021018;border-color:var(--acc)}
+.pill{display:inline-block;font:700 11px var(--mono);padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.pill.g{color:var(--green);border-color:#1f5e44}.pill.a{color:var(--amber);border-color:#5e4a1f}.pill.r{color:var(--red);border-color:#5a2030}.pill.c{color:var(--cyan);border-color:#1f4a5e}
+.muted{color:var(--dim);font-size:14px}
+.note{border-left:3px solid var(--amber);background:#1a1407;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;color:#f3dcb0;font-size:14px}
+.empty{color:var(--dim);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px}
+.list .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .item:last-child{border-bottom:0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+details>summary{list-style:none;cursor:pointer;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"＋";color:var(--acc);font-weight:900}
+details[open]>summary::after{content:"－"}
+details .in{padding:0 16px 16px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr 1fr}.stat b{font-size:19px}}
+</style>
+<style>.eps{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-top:6px}.ep{min-height:44px;border-radius:8px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);font:700 14px system-ui;cursor:pointer}.ep.on{background:var(--acc);color:#021018;border-color:var(--acc)}</style></head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">← Hub</a>
+<div class="tag">// Mission · Telly</div>
+<h1>Telly <span>Tracker</span></h1>
+<p class="sub">Track what you're watching and what's next, episode by episode.</p>
+
+<div class="card">
+  <h2>Add a show</h2>
+  <input id="tName" placeholder="Show name" aria-label="Show name">
+  <div class="row" style="margin-top:8px">
+    <div><label class="f" for="tSeasons">Seasons</label><input id="tSeasons" type="number" inputmode="numeric" min="1" value="1"></div>
+    <div><label class="f" for="tEps">Episodes per season</label><input id="tEps" type="number" inputmode="numeric" min="1" value="10"></div>
+  </div>
+  <label class="f" for="tStatus">Status</label>
+  <select id="tStatus"><option value="watching">▶️ Watching</option><option value="want">⭐ Want to watch</option><option value="done">✅ Finished</option></select>
+  <button class="btn full" id="tAdd" style="margin-top:10px">Add show</button>
+</div>
+<div class="tabs" id="filt"><button data-f="watching" class="on">▶️ Watching</button><button data-f="want">⭐ Want</button><button data-f="done">✅ Finished</button><button data-f="all">All</button></div>
+<div id="shows"></div>
+
+</div>
+<script>
+(function(){
+
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function gbp(x){x=isFinite(x)?x:0;return '£'+x.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function ukDate(s){if(!s)return '';var p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+
+
+var K='orion-telly-v1',S=load(K,[]),F='watching',openId=null;
+function pct(s){var tot=0,w=0;s.eps.forEach(function(n,si){tot+=n;w+=(s.seen[si]||[]).filter(Boolean).length;});return{tot:tot,w:w,p:tot?Math.round(w/tot*100):0};}
+function next(s){for(var si=0;si<s.eps.length;si++){for(var e=0;e<s.eps[si];e++){if(!(s.seen[si]||[])[e])return 'S'+(si+1)+' E'+(e+1);}}return null;}
+$('tAdd').addEventListener('click',function(){var n=$('tName').value.trim();if(!n)return;var ns=Math.max(1,parseInt($('tSeasons').value,10)||1),ne=Math.max(1,parseInt($('tEps').value,10)||10);
+  var eps=[];for(var i=0;i<ns;i++)eps.push(ne);S.unshift({id:Date.now(),name:n,status:$('tStatus').value,eps:eps,seen:[]});save(K,S);$('tName').value='';F=$('tStatus').value;draw();});
+$('filt').addEventListener('click',function(e){if(e.target.dataset.f){F=e.target.dataset.f;draw();}});
+function draw(){[].forEach.call(document.querySelectorAll('#filt button'),function(b){b.classList.toggle('on',b.dataset.f===F);});
+  var list=S.filter(function(s){return F==='all'||s.status===F;});
+  $('shows').innerHTML=list.length?list.map(function(s){var p=pct(s),nx=next(s),open=openId===s.id;
+    var grid='';if(open){grid=s.eps.map(function(n,si){var row='';for(var e=0;e<n;e++){var on=(s.seen[si]||[])[e];row+='<button class="ep'+(on?' on':'')+'" data-id="'+s.id+'" data-s="'+si+'" data-e="'+e+'" aria-label="Season '+(si+1)+' episode '+(e+1)+'">'+(e+1)+'</button>';}
+      return '<div style="margin:10px 0"><div class="row" style="justify-content:space-between"><b style="flex:0 0 auto">Season '+(si+1)+'</b><span style="flex:0 0 auto"><button class="btn small ghost" data-all="'+si+'" data-id="'+s.id+'">Tick all</button> <button class="btn small ghost" data-eps="'+si+'" data-id="'+s.id+'">Edit episodes</button></span></div><div class="eps">'+row+'</div></div>';}).join('')+
+      '<div class="row" style="margin-top:10px"><button class="btn small ghost" data-addS="'+s.id+'">＋ Add season</button><select data-st="'+s.id+'" aria-label="Status"><option value="watching"'+(s.status==='watching'?' selected':'')+'>▶️ Watching</option><option value="want"'+(s.status==='want'?' selected':'')+'>⭐ Want to watch</option><option value="done"'+(s.status==='done'?' selected':'')+'>✅ Finished</option></select><button class="btn small danger" data-del="'+s.id+'">Delete show</button></div>';}
+    return '<div class="card"><div class="row" style="justify-content:space-between;cursor:pointer" data-open="'+s.id+'"><div style="flex:1 1 auto"><h3 data-open="'+s.id+'">'+esc(s.name)+'</h3><div class="muted" data-open="'+s.id+'">'+(nx?'Next up: <b style="color:var(--acc)">'+nx+'</b>':'All watched 🎉')+' · '+p.w+'/'+p.tot+' eps</div></div><span class="pill c" style="flex:0 0 auto" data-open="'+s.id+'">'+p.p+'%</span></div><div class="bar" style="margin-top:8px"><i style="width:'+p.p+'%"></i></div>'+grid+'</div>';}).join(''):'<div class="empty">Nothing here yet. Add a show above.</div>';}
+function find(id){for(var i=0;i<S.length;i++)if(S[i].id==id)return S[i];}
+$('shows').addEventListener('click',function(e){var t=e.target,d=t.dataset,s;
+  if(d.open){openId=openId==d.open?null:+d.open;draw();return;}
+  if(d.e!=null){s=find(d.id);var si=+d.s,ei=+d.e;s.seen[si]=s.seen[si]||[];s.seen[si][ei]=!s.seen[si][ei];if(s.status==='want')s.status='watching';if(pct(s).p===100)s.status='done';save(K,S);draw();return;}
+  if(d.all!=null){s=find(d.id);var si2=+d.all,arr=[],allOn=true;for(var x=0;x<s.eps[si2];x++){if(!(s.seen[si2]||[])[x])allOn=false;}for(x=0;x<s.eps[si2];x++)arr.push(!allOn);s.seen[si2]=arr;if(pct(s).p===100)s.status='done';save(K,S);draw();return;}
+  if(d.eps!=null){s=find(d.id);var box=t.closest('div').parentNode;var cur=s.eps[+d.eps];var inp=document.createElement('input');inp.type='number';inp.value=cur;inp.min=1;inp.style.marginTop='6px';inp.setAttribute('aria-label','Episodes in season');
+    inp.addEventListener('change',function(){s.eps[+d.eps]=Math.max(1,parseInt(inp.value,10)||cur);save(K,S);draw();});box.appendChild(inp);inp.focus();return;}
+  if(d.adds){s=find(d.adds);s.eps.push(s.eps[s.eps.length-1]||10);if(s.status==='done')s.status='watching';save(K,S);draw();return;}
+  if(d.del){if(t.dataset.arm!=='1'){t.dataset.arm='1';t.textContent='Tap again to delete';return;}S=S.filter(function(x){return x.id!=d.del;});save(K,S);draw();}});
+$('shows').addEventListener('change',function(e){var id=e.target.dataset.st;if(!id)return;find(id).status=e.target.value;save(K,S);F=e.target.value;draw();});
+draw();
+
+})();
+</script>
+</body>
+</html>

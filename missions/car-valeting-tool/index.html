@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Car Valeting Tool — Orion Workshop</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--panel2:#0f1a2e;--line:#1c2b48;--cyan:#3ee6ff;--amber:#ffb547;--green:#4dff9a;--red:#ff5d6c;--text:#d8e6ff;--dim:#7d93b8;--mono:ui-monospace,Consolas,monospace;--acc:var(--cyan)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+a.back{color:var(--dim);text-decoration:none;font:13px var(--mono)}
+.tag{font:600 12px var(--mono);letter-spacing:.2em;color:var(--acc);margin-top:14px;text-transform:uppercase}
+h1{font:800 clamp(28px,8vw,42px)/1.05 system-ui,sans-serif;margin:6px 0 4px;text-transform:uppercase}
+h1 span{color:var(--acc);text-shadow:0 0 20px var(--acc)}
+h2{font:800 19px/1.25 system-ui,sans-serif;margin:0 0 10px}
+h3{font:700 16px system-ui;margin:0 0 6px}
+p.sub{color:var(--dim);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+label.f{display:block;font:600 12px var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);font:16px system-ui,sans-serif;padding:12px;min-height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(62,230,255,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border:0;border-radius:10px;background:var(--acc);color:#021018;font:800 15px system-ui;cursor:pointer}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+.btn.small{min-height:36px;padding:0 12px;font-size:13px}
+.btn.danger{background:none;border:1px solid #5a2030;color:var(--red)}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{display:block;font:600 11px var(--mono);letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.stat b{font:800 22px system-ui;color:var(--acc)}
+.bar{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px var(--acc);transition:width .4s}
+.prog{display:flex;justify-content:space-between;font:600 13px var(--mono);color:var(--dim);margin-bottom:6px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{appearance:none;flex:0 0 26px;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;margin-top:1px;cursor:pointer;position:relative;background:#06101c}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+.chk.done span{color:var(--dim);text-decoration:line-through}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{flex:0 0 auto;min-height:42px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--dim);font:700 14px system-ui;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#021018;border-color:var(--acc)}
+.pill{display:inline-block;font:700 11px var(--mono);padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.pill.g{color:var(--green);border-color:#1f5e44}.pill.a{color:var(--amber);border-color:#5e4a1f}.pill.r{color:var(--red);border-color:#5a2030}.pill.c{color:var(--cyan);border-color:#1f4a5e}
+.muted{color:var(--dim);font-size:14px}
+.note{border-left:3px solid var(--amber);background:#1a1407;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;color:#f3dcb0;font-size:14px}
+.empty{color:var(--dim);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px}
+.list .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .item:last-child{border-bottom:0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+details>summary{list-style:none;cursor:pointer;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"＋";color:var(--acc);font-weight:900}
+details[open]>summary::after{content:"－"}
+details .in{padding:0 16px 16px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr 1fr}.stat b{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">← Hub</a>
+<div class="tag">// Mission · Valeting</div>
+<h1>Valet <span>Desk</span></h1>
+<p class="sub">Quote a job in seconds, log it, and see what you've earned this week and month.</p>
+
+<div class="tabs" id="tabs"><button data-t="quote" class="on">💷 Quote</button><button data-t="jobs">📒 Jobs</button><button data-t="prices">⚙️ My prices</button></div>
+
+<section id="t-quote">
+  <div class="card">
+    <label class="f" for="qSvc">Service</label><select id="qSvc"></select>
+    <label class="f">Car size</label><div class="tabs" id="qSize"></div>
+    <label class="f">Add-ons</label><div id="qAdd"></div>
+  </div>
+  <div class="card" style="text-align:center">
+    <small class="muted" style="font:600 12px var(--mono);letter-spacing:.14em">QUOTE</small>
+    <div id="qTotal" style="font:800 52px/1.1 system-ui;color:var(--acc);text-shadow:0 0 22px var(--acc)">£0</div>
+    <div class="muted" id="qBreak"></div>
+  </div>
+  <div class="card">
+    <h2>Book it as a job</h2>
+    <div class="row"><input id="jName" placeholder="Customer first name" aria-label="Customer first name"><input id="jDate" type="date" aria-label="Date"></div>
+    <label class="chk" style="border:0"><input type="checkbox" id="jPaid"><span>Paid already</span></label>
+    <button class="btn full" id="jAdd">Add job at this price</button>
+  </div>
+</section>
+
+<section id="t-jobs" hidden>
+  <div class="grid2">
+    <div class="stat"><small>This week</small><b id="sWeek">£0</b></div>
+    <div class="stat"><small>This month</small><b id="sMonth">£0</b></div>
+    <div class="stat"><small>Jobs this month</small><b id="sJobs">0</b></div>
+    <div class="stat"><small>Unpaid</small><b id="sUnpaid" style="color:var(--amber)">£0</b></div>
+  </div>
+  <div class="card list" id="jobs"></div>
+</section>
+
+<section id="t-prices" hidden>
+  <div class="card">
+    <h2>Base prices (small car)</h2>
+    <div id="pSvc"></div>
+    <h2 style="margin-top:16px">Car size uplift</h2>
+    <div id="pSize"></div>
+    <h2 style="margin-top:16px">Add-ons</h2>
+    <div id="pAdd"></div>
+    <button class="btn ghost full" id="pReset" style="margin-top:12px">Reset to default prices</button>
+  </div>
+  <p class="muted">Prices save on this device. These are starter guesses, so set them to what you charge.</p>
+</section>
+
+</div>
+<script>
+(function(){
+
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function gbp(x){x=isFinite(x)?x:0;return '£'+x.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function ukDate(s){if(!s)return '';var p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+
+
+var DEF={svc:[['Exterior wash',15],['Interior clean',30],['Mini valet (in and out)',35],['Full valet',70],['Showroom / deep valet',120]],
+ size:[['Small',0],['Medium',10],['Large / SUV',20],['Van / 7-seater',30]],
+ add:[['Pet hair removal',10],['Hand wax',15],['Engine bay clean',15],['Headlight restore',20],['Odour treatment',10],['Seat shampoo',25]]};
+var PK='orion-valet-prices-v1',JK='orion-valet-jobs-v1',P=load(PK,JSON.parse(JSON.stringify(DEF))),J=load(JK,[]);
+var q={svc:0,size:0,add:{}};
+function tab(t){[].forEach.call(document.querySelectorAll('#tabs button'),function(b){b.classList.toggle('on',b.dataset.t===t);});['quote','jobs','prices'].forEach(function(x){$('t-'+x).hidden=x!==t;});if(t==='jobs')drawJobs();if(t==='prices')drawPrices();}
+$('tabs').addEventListener('click',function(e){if(e.target.dataset.t)tab(e.target.dataset.t);});
+function price(){var b=P.svc[q.svc]?P.svc[q.svc][1]:0,s=P.size[q.size]?P.size[q.size][1]:0,a=0,parts=[];P.add.forEach(function(x,i){if(q.add[i]){a+=x[1];parts.push(x[0]);}});return{total:b+s+a,b:b,s:s,parts:parts};}
+function drawQuote(){
+  $('qSvc').innerHTML=P.svc.map(function(s,i){return '<option value="'+i+'"'+(i==q.svc?' selected':'')+'>'+esc(s[0])+' (£'+s[1]+')</option>';}).join('');
+  $('qSize').innerHTML=P.size.map(function(s,i){return '<button type="button" data-i="'+i+'" class="'+(i==q.size?'on':'')+'">'+esc(s[0])+(s[1]?' +£'+s[1]:'')+'</button>';}).join('');
+  $('qAdd').innerHTML=P.add.map(function(s,i){return '<label class="chk"><input type="checkbox" data-i="'+i+'"'+(q.add[i]?' checked':'')+'><span>'+esc(s[0])+' <b style="color:var(--acc)">+£'+s[1]+'</b></span></label>';}).join('');
+  calc();}
+function calc(){var p=price();$('qTotal').textContent='£'+p.total;$('qBreak').textContent=(P.svc[q.svc]?P.svc[q.svc][0]:'')+' · '+(P.size[q.size]?P.size[q.size][0]:'')+(p.parts.length?' · '+p.parts.join(', '):'');}
+$('qSvc').addEventListener('change',function(){q.svc=+this.value;calc();});
+$('qSize').addEventListener('click',function(e){if(e.target.dataset.i==null)return;q.size=+e.target.dataset.i;drawQuote();});
+$('qAdd').addEventListener('change',function(e){q.add[e.target.dataset.i]=e.target.checked;calc();});
+$('jDate').value=today();
+$('jAdd').addEventListener('click',function(){var p=price();J.unshift({date:$('jDate').value||today(),name:$('jName').value.trim(),svc:(P.svc[q.svc]||['?'])[0],size:(P.size[q.size]||['?'])[0],extras:p.parts,price:p.total,paid:$('jPaid').checked});save(JK,J);
+  $('jName').value='';$('jPaid').checked=false;this.textContent='✓ Added to jobs';var b=this;setTimeout(function(){b.textContent='Add job at this price';},1500);});
+function weekStart(){var d=new Date();d.setHours(0,0,0,0);var day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);return d;}
+function drawJobs(){
+  var ws=weekStart(),now=new Date(),m=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'),w=0,mo=0,mj=0,un=0;
+  J.forEach(function(j){var d=new Date(j.date+'T00:00:00');if(d>=ws)w+=j.price;if((j.date||'').slice(0,7)===m){mo+=j.price;mj++;}if(!j.paid)un+=j.price;});
+  $('sWeek').textContent=gbp(w);$('sMonth').textContent=gbp(mo);$('sJobs').textContent=mj;$('sUnpaid').textContent=gbp(un);
+  $('jobs').innerHTML=J.length?J.map(function(j,i){return '<div class="item"><div><b>'+esc(j.name||'Customer')+'</b> <span class="muted">'+ukDate(j.date)+'</span><div class="muted">'+esc(j.svc)+' · '+esc(j.size)+(j.extras&&j.extras.length?' · '+esc(j.extras.join(', ')):'')+'</div></div><div style="text-align:right;flex:0 0 auto"><div style="font-weight:800">£'+j.price+'</div><button class="btn small '+(j.paid?'ghost':'')+'" data-p="'+i+'">'+(j.paid?'Paid ✓':'Mark paid')+'</button> <button class="btn danger small" data-d="'+i+'" aria-label="Delete">✕</button></div></div>';}).join(''):'<div class="empty">No jobs yet. Do a quote and tap "Add job".</div>';}
+$('jobs').addEventListener('click',function(e){var p=e.target.dataset.p,d=e.target.dataset.d;if(p!=null){J[+p].paid=!J[+p].paid;}else if(d!=null){J.splice(+d,1);}else return;save(JK,J);drawJobs();});
+function rows(arr,key){return arr.map(function(s,i){return '<div class="row" style="margin:6px 0"><span style="flex:2 1 160px">'+esc(s[0])+'</span><input type="number" inputmode="decimal" min="0" step="1" value="'+s[1]+'" data-g="'+key+'" data-i="'+i+'" style="flex:0 0 100px" aria-label="'+esc(s[0])+' price £"></div>';}).join('');}
+function drawPrices(){$('pSvc').innerHTML=rows(P.svc,'svc');$('pSize').innerHTML=rows(P.size,'size');$('pAdd').innerHTML=rows(P.add,'add');}
+$('t-prices').addEventListener('input',function(e){var g=e.target.dataset.g;if(!g)return;P[g][+e.target.dataset.i][1]=parseFloat(e.target.value)||0;save(PK,P);drawQuote();});
+var arm=false;$('pReset').addEventListener('click',function(){if(!arm){arm=true;this.textContent='Tap again to reset prices';var b=this;setTimeout(function(){arm=false;b.textContent='Reset to default prices';},3000);return;}P=JSON.parse(JSON.stringify(DEF));save(PK,P);drawPrices();drawQuote();arm=false;this.textContent='Reset to default prices';});
+drawQuote();
+
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shift Handover — Orion Workshop</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--panel2:#0f1a2e;--line:#1c2b48;--cyan:#3ee6ff;--amber:#ffb547;--green:#4dff9a;--red:#ff5d6c;--text:#d8e6ff;--dim:#7d93b8;--mono:ui-monospace,Consolas,monospace;--acc:var(--cyan)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+a.back{color:var(--dim);text-decoration:none;font:13px var(--mono)}
+.tag{font:600 12px var(--mono);letter-spacing:.2em;color:var(--acc);margin-top:14px;text-transform:uppercase}
+h1{font:800 clamp(28px,8vw,42px)/1.05 system-ui,sans-serif;margin:6px 0 4px;text-transform:uppercase}
+h1 span{color:var(--acc);text-shadow:0 0 20px var(--acc)}
+h2{font:800 19px/1.25 system-ui,sans-serif;margin:0 0 10px}
+h3{font:700 16px system-ui;margin:0 0 6px}
+p.sub{color:var(--dim);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+label.f{display:block;font:600 12px var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);font:16px system-ui,sans-serif;padding:12px;min-height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(62,230,255,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border:0;border-radius:10px;background:var(--acc);color:#021018;font:800 15px system-ui;cursor:pointer}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+.btn.small{min-height:36px;padding:0 12px;font-size:13px}
+.btn.danger{background:none;border:1px solid #5a2030;color:var(--red)}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{display:block;font:600 11px var(--mono);letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.stat b{font:800 22px system-ui;color:var(--acc)}
+.bar{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px var(--acc);transition:width .4s}
+.prog{display:flex;justify-content:space-between;font:600 13px var(--mono);color:var(--dim);margin-bottom:6px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{appearance:none;flex:0 0 26px;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;margin-top:1px;cursor:pointer;position:relative;background:#06101c}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+.chk.done span{color:var(--dim);text-decoration:line-through}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{flex:0 0 auto;min-height:42px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--dim);font:700 14px system-ui;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#021018;border-color:var(--acc)}
+.pill{display:inline-block;font:700 11px var(--mono);padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.pill.g{color:var(--green);border-color:#1f5e44}.pill.a{color:var(--amber);border-color:#5e4a1f}.pill.r{color:var(--red);border-color:#5a2030}.pill.c{color:var(--cyan);border-color:#1f4a5e}
+.muted{color:var(--dim);font-size:14px}
+.note{border-left:3px solid var(--amber);background:#1a1407;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;color:#f3dcb0;font-size:14px}
+.empty{color:var(--dim);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px}
+.list .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .item:last-child{border-bottom:0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+details>summary{list-style:none;cursor:pointer;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"＋";color:var(--acc);font-weight:900}
+details[open]>summary::after{content:"－"}
+details .in{padding:0 16px 16px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr 1fr}.stat b{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">← Hub</a>
+<div class="tag">// Mission · Work</div>
+<h1>Shift <span>Handover</span></h1>
+<p class="sub">Run through the handover, add notes, then copy it into WhatsApp in one tap.</p>
+
+<div class="card">
+  <div class="row"><div><label class="f" for="hFrom">From</label><input id="hFrom" placeholder="Your name"></div><div><label class="f" for="hTo">To</label><input id="hTo" placeholder="Next manager"></div></div>
+  <label class="f" for="hDate">Shift</label>
+  <div class="row"><input id="hDate" type="date"><select id="hShift"><option>Early</option><option>Middle</option><option>Late</option></select></div>
+</div><div class="card"><div class="prog"><span id="pTxt">0 / 0</span><span id="pPct">0%</span></div><div class="bar"><i id="pBar"></i></div></div>
+<div id="list"></div>
+<div class="card">
+  <label class="f" for="hNotes">Notes for next shift</label>
+  <textarea id="hNotes" placeholder="Anything they need to know or pick up"></textarea>
+</div>
+<button class="btn full" id="copy">📋 Copy handover to paste into WhatsApp</button>
+<p class="muted" id="copyMsg" style="text-align:center"></p>
+<pre id="out" hidden style="white-space:pre-wrap;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;font:13px var(--mono)"></pre>
+<button class="btn ghost full" id="reset" style="margin-top:10px">Start a new shift (clear all)</button>
+
+</div>
+<script>
+(function(){
+
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function gbp(x){x=isFinite(x)?x:0;return '£'+x.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function ukDate(s){if(!s)return '';var p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+
+
+function makeChecklist(KEY,DATA,host,onChange){
+  var st=load(KEY,{});
+  function id(si,ii){return si+':'+ii;}
+  function render(){
+    var all=0,done=0,html='';
+    DATA.forEach(function(sec,si){
+      var sd=0;sec.items.forEach(function(it,ii){if(st[id(si,ii)])sd++;});
+      all+=sec.items.length;done+=sd;
+      var open=sec._open?' open':'';
+      html+='<details data-s="'+si+'"'+open+'><summary><div><h3>'+esc(sec.t)+'</h3><span class="pill '+(sd===sec.items.length?'g':(sd?'a':'c'))+'">'+sd+' / '+sec.items.length+'</span></div></summary><div class="in">'+
+        (sec.d?'<p class="muted">'+sec.d+'</p>':'')+
+        sec.items.map(function(it,ii){var on=!!st[id(si,ii)];return '<label class="chk'+(on?' done':'')+'"><input type="checkbox" data-k="'+id(si,ii)+'"'+(on?' checked':'')+'><span>'+it+'</span></label>';}).join('')+
+        '</div></details>';
+    });
+    host.innerHTML=html;
+    var pct=all?Math.round(done/all*100):0;
+    $('pTxt').textContent=done+' / '+all+' done';$('pPct').textContent=pct+'%';$('pBar').style.width=pct+'%';
+    if(onChange)onChange(done,all);
+  }
+  host.addEventListener('change',function(e){var k=e.target.dataset.k;if(!k)return;st[k]=e.target.checked;save(KEY,st);
+    var det=e.target.closest('details');DATA[+det.dataset.s]._open=true;render();});
+  host.addEventListener('toggle',function(e){var d=e.target;if(d.dataset&&d.dataset.s!=null)DATA[+d.dataset.s]._open=d.open;},true);
+  render();
+  return {reset:function(){st={};save(KEY,st);render();},state:function(){return st;}};
+}
+var DATA=[{"t": "Tills and cash", "d": "", "items": ["Tills balanced / any variances noted", "Change float sorted", "Cash office secure", "Safe checks done"]}, {"t": "Deliveries and stock", "d": "", "items": ["Delivery received and checked", "Any shorts or damages noted", "Backstock status", "Chillers and freezers at temperature (checks recorded)", "Date checks / reductions done"]}, {"t": "Shop floor", "d": "", "items": ["Fit for Trade standard met", "Bakery status", "Price changes / point-of-sale up", "Any empty or gapped lines"]}, {"t": "People", "d": "", "items": ["Breaks all taken", "Any sickness, lateness or no-shows", "Training or coaching done", "Next shift staffing OK"]}, {"t": "Health and safety", "d": "", "items": ["Any accidents or near misses recorded", "Spills or hazards dealt with", "Fire exits clear", "Equipment faults reported"]}, {"t": "Handover", "d": "", "items": ["Customer complaints or issues passed on", "Jobs not finished passed on (see notes)", "Keys and alarm handed over"]}];
+var cl=makeChecklist('orion-handover-v1',DATA,$('list'));
+var FK='orion-handover-form-v1',f=load(FK,{from:'',to:'',date:today(),shift:'Early',notes:''});
+['from','to','date','shift','notes'].forEach(function(k){var el=$('h'+k[0].toUpperCase()+k.slice(1));el.value=f[k]||'';el.addEventListener('input',function(){f[k]=el.value;save(FK,f);});});
+if(!f.date){$('hDate').value=today();f.date=today();}
+function text(){var st=cl.state(),t='SHIFT HANDOVER: '+(f.shift||'')+' '+ukDate(f.date)+'\nFrom: '+(f.from||'-')+'  To: '+(f.to||'-')+'\n';
+  DATA.forEach(function(sec,si){t+='\n'+sec.t.toUpperCase()+'\n';sec.items.forEach(function(it,ii){t+=(st[si+':'+ii]?'✅ ':'⬜ ')+it+'\n';});});
+  if(f.notes)t+='\nNOTES\n'+f.notes+'\n';return t;}
+$('copy').addEventListener('click',function(){var t=text();$('out').textContent=t;
+  function ok(){$('copyMsg').textContent='Copied! Paste it into WhatsApp.';}
+  function fail(){$('out').hidden=false;$('copyMsg').textContent='Couldn\'t copy automatically, so press and hold the text below to copy it.';}
+  try{navigator.clipboard.writeText(t).then(ok,fail);}catch(e){fail();}});
+var arm=false;$('reset').addEventListener('click',function(){if(!arm){arm=true;this.textContent='Tap again to clear everything';var b=this;setTimeout(function(){arm=false;b.textContent='Start a new shift (clear all)';},3000);return;}
+  cl.reset();f={from:f.from,to:'',date:today(),shift:'Early',notes:''};save(FK,f);['from','to','date','shift','notes'].forEach(function(k){$('h'+k[0].toUpperCase()+k.slice(1)).value=f[k]||'';});$('out').hidden=true;$('copyMsg').textContent='';arm=false;this.textContent='Start a new shift (clear all)';});
+
+})();
+</script>
+</body>
+</html>

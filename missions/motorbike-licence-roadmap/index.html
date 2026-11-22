@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Motorbike Licence Roadmap — Orion Workshop</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--panel2:#0f1a2e;--line:#1c2b48;--cyan:#3ee6ff;--amber:#ffb547;--green:#4dff9a;--red:#ff5d6c;--text:#d8e6ff;--dim:#7d93b8;--mono:ui-monospace,Consolas,monospace;--acc:var(--cyan)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+a.back{color:var(--dim);text-decoration:none;font:13px var(--mono)}
+.tag{font:600 12px var(--mono);letter-spacing:.2em;color:var(--acc);margin-top:14px;text-transform:uppercase}
+h1{font:800 clamp(28px,8vw,42px)/1.05 system-ui,sans-serif;margin:6px 0 4px;text-transform:uppercase}
+h1 span{color:var(--acc);text-shadow:0 0 20px var(--acc)}
+h2{font:800 19px/1.25 system-ui,sans-serif;margin:0 0 10px}
+h3{font:700 16px system-ui;margin:0 0 6px}
+p.sub{color:var(--dim);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+label.f{display:block;font:600 12px var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);font:16px system-ui,sans-serif;padding:12px;min-height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(62,230,255,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border:0;border-radius:10px;background:var(--acc);color:#021018;font:800 15px system-ui;cursor:pointer}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+.btn.small{min-height:36px;padding:0 12px;font-size:13px}
+.btn.danger{background:none;border:1px solid #5a2030;color:var(--red)}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{display:block;font:600 11px var(--mono);letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.stat b{font:800 22px system-ui;color:var(--acc)}
+.bar{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px var(--acc);transition:width .4s}
+.prog{display:flex;justify-content:space-between;font:600 13px var(--mono);color:var(--dim);margin-bottom:6px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{appearance:none;flex:0 0 26px;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;margin-top:1px;cursor:pointer;position:relative;background:#06101c}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+.chk.done span{color:var(--dim);text-decoration:line-through}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{flex:0 0 auto;min-height:42px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--dim);font:700 14px system-ui;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#021018;border-color:var(--acc)}
+.pill{display:inline-block;font:700 11px var(--mono);padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.pill.g{color:var(--green);border-color:#1f5e44}.pill.a{color:var(--amber);border-color:#5e4a1f}.pill.r{color:var(--red);border-color:#5a2030}.pill.c{color:var(--cyan);border-color:#1f4a5e}
+.muted{color:var(--dim);font-size:14px}
+.note{border-left:3px solid var(--amber);background:#1a1407;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;color:#f3dcb0;font-size:14px}
+.empty{color:var(--dim);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px}
+.list .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .item:last-child{border-bottom:0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+details>summary{list-style:none;cursor:pointer;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"＋";color:var(--acc);font-weight:900}
+details[open]>summary::after{content:"－"}
+details .in{padding:0 16px 16px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr 1fr}.stat b{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">← Hub</a>
+<div class="tag">// Mission · Motorbike</div>
+<h1>Bike <span>Licence</span></h1>
+<p class="sub">Every stage from provisional to full licence, with checklists, rough costs and a lesson log.</p>
+<div class="card"><div class="prog"><span id="pTxt">0 / 0</span><span id="pPct">0%</span></div><div class="bar"><i id="pBar"></i></div></div>
+<div class="note">Fees and rules change, so check GOV.UK for current test fees before booking. The costs shown here are rough guides only.</div>
+<div id="list"></div>
+<div class="card">
+  <h2>Lesson log</h2>
+  <div class="row"><input id="lDate" type="date" aria-label="Date"><input id="lWhat" placeholder="What did you do? e.g. CBT, U-turns" aria-label="What"></div>
+  <textarea id="lNote" placeholder="Notes: what went well, what to work on" style="margin-top:8px"></textarea>
+  <button class="btn full" id="lAdd" style="margin-top:8px">Add to log</button>
+  <div class="list" id="log" style="margin-top:10px"></div>
+</div>
+<button class="btn ghost full" id="reset">Reset all ticks</button>
+
+</div>
+<script>
+(function(){
+
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function gbp(x){x=isFinite(x)?x:0;return '£'+x.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function ukDate(s){if(!s)return '';var p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+
+
+function makeChecklist(KEY,DATA,host,onChange){
+  var st=load(KEY,{});
+  function id(si,ii){return si+':'+ii;}
+  function render(){
+    var all=0,done=0,html='';
+    DATA.forEach(function(sec,si){
+      var sd=0;sec.items.forEach(function(it,ii){if(st[id(si,ii)])sd++;});
+      all+=sec.items.length;done+=sd;
+      var open=sec._open?' open':'';
+      html+='<details data-s="'+si+'"'+open+'><summary><div><h3>'+esc(sec.t)+'</h3><span class="pill '+(sd===sec.items.length?'g':(sd?'a':'c'))+'">'+sd+' / '+sec.items.length+'</span></div></summary><div class="in">'+
+        (sec.d?'<p class="muted">'+sec.d+'</p>':'')+
+        sec.items.map(function(it,ii){var on=!!st[id(si,ii)];return '<label class="chk'+(on?' done':'')+'"><input type="checkbox" data-k="'+id(si,ii)+'"'+(on?' checked':'')+'><span>'+it+'</span></label>';}).join('')+
+        '</div></details>';
+    });
+    host.innerHTML=html;
+    var pct=all?Math.round(done/all*100):0;
+    $('pTxt').textContent=done+' / '+all+' done';$('pPct').textContent=pct+'%';$('pBar').style.width=pct+'%';
+    if(onChange)onChange(done,all);
+  }
+  host.addEventListener('change',function(e){var k=e.target.dataset.k;if(!k)return;st[k]=e.target.checked;save(KEY,st);
+    var det=e.target.closest('details');DATA[+det.dataset.s]._open=true;render();});
+  host.addEventListener('toggle',function(e){var d=e.target;if(d.dataset&&d.dataset.s!=null)DATA[+d.dataset.s]._open=d.open;},true);
+  render();
+  return {reset:function(){st={};save(KEY,st);render();},state:function(){return st;}};
+}
+var DATA=[{"t": "1. Provisional licence", "d": "You need motorcycle (category A) entitlement on your provisional. If you already hold a full car licence, it already covers this.", "items": ["Check your driving licence has provisional motorcycle entitlement (category A)", "If not, apply on GOV.UK (it's cheaper online than by post)", "Get your eyes checked: you must read a number plate from 20 metres"]}, {"t": "2. CBT (Compulsory Basic Training)", "d": "A one-day course that lets you ride up to 125cc on L-plates. Usually around \u00a3130\u2013\u00a3200. The certificate lasts 2 years. You don't need it before the theory test, but most people do it first.", "items": ["Find a local approved training school (ATB) and compare prices", "Book CBT (ask if bike, helmet and gloves are included)", "Sort clothing: sturdy boots, jeans or bike trousers, a jacket (most schools lend helmets and gloves)", "Do the CBT day: off-road basics, then a road ride of at least 2 hours", "Get your DL196 certificate and keep it somewhere safe"]}, {"t": "3. Motorcycle theory test", "d": "50 multiple-choice questions (pass mark 43) plus hazard perception (pass mark 44 out of 75). Lasts 2 years. It's a separate test from the car theory.", "items": ["Download the official DVSA theory revision app or books", "Practise the multiple-choice questions until you're scoring 46+ consistently", "Practise hazard perception clips", "Book the motorcycle theory test on GOV.UK", "Pass it and write down your pass certificate number"]}, {"t": "4. Choose your licence route", "d": "A1 from 17 (up to 125cc). A2 from 19 (up to 35kW). Full A by direct access (DAS) from 24, or from 21 if you've held A2 for 2 years.", "items": ["Decide your route (direct access/DAS if you're 24 or over)", "Ask your training school for a DAS package price (often 3\u20135 days of training, roughly \u00a3700\u2013\u00a31,200)", "Check the package includes test fees and bike hire"]}, {"t": "5. DAS training", "d": "Training on a big bike (595cc+) with an instructor, using radio contact.", "items": ["Book training days", "Practise slow control and U-turns", "Practise the emergency stop and the avoidance (swerve) exercise", "Get used to the bigger bike: clutch control, slow figure-of-eights", "Road rides: junctions, roundabouts, dual carriageways and independent riding with a sat nav"]}, {"t": "6. Module 1 (off-road test)", "d": "Done in a test-centre compound. It includes the slalom, figure of eight, slow ride, U-turn, cornering and the controlled stop, plus the emergency stop and hazard avoidance (which have a speed requirement).", "items": ["Book Module 1 (your school usually does this)", "Practise hitting the speed for the emergency stop and avoidance exercises", "Pass Module 1 and keep the pass certificate (you need it for Module 2)"]}, {"t": "7. Module 2 (on-road test)", "d": "Around 40 minutes. Eyesight check, 'show me, tell me' safety questions, then normal and independent riding.", "items": ["Book Module 2", "Learn the 'show me, tell me' questions", "Have a warm-up ride before the test", "Pass Module 2 \ud83c\udfcd\ufe0f Full licence!"]}, {"t": "8. After you pass", "d": "", "items": ["Get bike insurance quotes before you buy a bike", "Buy proper kit: helmet, armoured jacket, trousers, gloves and boots", "Consider extra training (e.g. advanced rider courses for cheaper insurance)", "Choose your first big bike"]}];
+var cl=makeChecklist('orion-bike-v1',DATA,$('list'));
+var LK='orion-bike-log-v1',log=load(LK,[]);
+$('lDate').value=today();
+function drawLog(){$('log').innerHTML=log.length?log.map(function(l,i){return '<div class="item"><div><b>'+esc(l.what||'Lesson')+'</b> <span class="muted">'+ukDate(l.date)+'</span>'+(l.note?'<div class="muted">'+esc(l.note)+'</div>':'')+'</div><button class="btn danger small" data-i="'+i+'" aria-label="Delete">✕</button></div>';}).join(''):'<div class="empty">No lessons logged yet.</div>';}
+$('lAdd').addEventListener('click',function(){var w=$('lWhat').value.trim(),n=$('lNote').value.trim();if(!w&&!n)return;log.unshift({date:$('lDate').value,what:w,note:n});save(LK,log);$('lWhat').value='';$('lNote').value='';drawLog();});
+$('log').addEventListener('click',function(e){var i=e.target.dataset.i;if(i==null)return;log.splice(+i,1);save(LK,log);drawLog();});
+var arm=false;$('reset').addEventListener('click',function(){if(!arm){arm=true;this.textContent='Tap again to reset';var b=this;setTimeout(function(){arm=false;b.textContent='Reset all ticks';},3000);return;}cl.reset();arm=false;this.textContent='Reset all ticks';});
+drawLog();
+
+})();
+</script>
+</body>
+</html>

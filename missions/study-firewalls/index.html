@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Study: Firewalls — Orion Workshop</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--panel2:#0f1a2e;--line:#1c2b48;--cyan:#3ee6ff;--amber:#ffb547;--green:#4dff9a;--red:#ff5d6c;--text:#d8e6ff;--dim:#7d93b8;--mono:ui-monospace,Consolas,monospace;--acc:var(--cyan)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+a.back{color:var(--dim);text-decoration:none;font:13px var(--mono)}
+.tag{font:600 12px var(--mono);letter-spacing:.2em;color:var(--acc);margin-top:14px;text-transform:uppercase}
+h1{font:800 clamp(28px,8vw,42px)/1.05 system-ui,sans-serif;margin:6px 0 4px;text-transform:uppercase}
+h1 span{color:var(--acc);text-shadow:0 0 20px var(--acc)}
+h2{font:800 19px/1.25 system-ui,sans-serif;margin:0 0 10px}
+h3{font:700 16px system-ui;margin:0 0 6px}
+p.sub{color:var(--dim);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+label.f{display:block;font:600 12px var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);font:16px system-ui,sans-serif;padding:12px;min-height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(62,230,255,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border:0;border-radius:10px;background:var(--acc);color:#021018;font:800 15px system-ui;cursor:pointer}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+.btn.small{min-height:36px;padding:0 12px;font-size:13px}
+.btn.danger{background:none;border:1px solid #5a2030;color:var(--red)}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{display:block;font:600 11px var(--mono);letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.stat b{font:800 22px system-ui;color:var(--acc)}
+.bar{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px var(--acc);transition:width .4s}
+.prog{display:flex;justify-content:space-between;font:600 13px var(--mono);color:var(--dim);margin-bottom:6px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{appearance:none;flex:0 0 26px;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;margin-top:1px;cursor:pointer;position:relative;background:#06101c}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+.chk.done span{color:var(--dim);text-decoration:line-through}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{flex:0 0 auto;min-height:42px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--dim);font:700 14px system-ui;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#021018;border-color:var(--acc)}
+.pill{display:inline-block;font:700 11px var(--mono);padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.pill.g{color:var(--green);border-color:#1f5e44}.pill.a{color:var(--amber);border-color:#5e4a1f}.pill.r{color:var(--red);border-color:#5a2030}.pill.c{color:var(--cyan);border-color:#1f4a5e}
+.muted{color:var(--dim);font-size:14px}
+.note{border-left:3px solid var(--amber);background:#1a1407;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;color:#f3dcb0;font-size:14px}
+.empty{color:var(--dim);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px}
+.list .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .item:last-child{border-bottom:0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+details>summary{list-style:none;cursor:pointer;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"＋";color:var(--acc);font-weight:900}
+details[open]>summary::after{content:"－"}
+details .in{padding:0 16px 16px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr 1fr}.stat b{font-size:19px}}
+</style>
+<style>
+.fcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.fc{perspective:800px;min-height:130px;cursor:pointer;background:none;border:0;padding:0;color:inherit;text-align:left;font:inherit}
+.fc .inner{position:relative;width:100%;height:100%;min-height:130px;transition:transform .5s;transform-style:preserve-3d}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:center;text-align:center}
+.fc .front{background:var(--panel2);font:800 17px system-ui;color:var(--acc)}
+.fc .back{background:#0a1a2a;transform:rotateY(180deg);font-size:14px}
+.opt{display:block;width:100%;text-align:left;min-height:48px;margin:6px 0;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:15px system-ui;cursor:pointer}
+.opt.right{border-color:var(--green);background:#07180f}.opt.wrong{border-color:var(--red);background:#1b0a0e}
+.why{margin-top:6px;font-size:14px;color:#c9ffe0}
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sec-head label{flex:0 0 auto;display:flex;gap:6px;align-items:center;font:600 12px var(--mono);color:var(--dim)}
+.sec-head input{appearance:none;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;background:#06101c;position:relative;cursor:pointer}
+.sec-head input:checked{background:var(--green);border-color:var(--green)}
+.sec-head input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+</style></head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">← Hub</a>
+<div class="tag">// Study · Cyber</div>
+<h1>FIRE <span>WALLS</span></h1>
+<p class="sub">What firewalls are, how rules work, and what a SOC analyst does with firewall logs.</p>
+<div class="card"><div class="prog"><span id="pTxt">0 / 5 sections</span><span id="pPct">0%</span></div><div class="bar"><i id="pBar"></i></div></div><div class="card"><div class="sec-head"><h2>1. Plain English</h2><label>Done <input type="checkbox" data-sec="explain"></label></div><p>A firewall is a bouncer for network traffic. Every connection trying to get in or out is checked against a list of rules, and the firewall either lets it through (allow) or turns it away (deny or drop).</p><p>Rules usually look at five things, called the <b>5-tuple</b>: source IP, destination IP, source port, destination port and protocol (TCP or UDP). For example, 'allow any internal PC to reach any web server on TCP port 443' lets people browse HTTPS websites.</p><p>Firewalls read rules from the top down and stop at the first match. At the bottom there's normally an 'implicit deny', meaning anything not explicitly allowed gets blocked. That's the <b>default deny</b> idea, and it's best practice.</p><p>Most modern firewalls are <b>stateful</b>: they remember connections. If your PC starts a connection out to a website, the firewall automatically allows the reply back in, without needing a separate rule.</p><p><b>Next-generation firewalls (NGFW)</b> go further. They can recognise applications (e.g. 'this is Dropbox', even on port 443), check traffic against known attack signatures (IPS), and filter by user or website category.</p><p>You'll also meet <b>host-based firewalls</b> (like Windows Defender Firewall), which protect one machine, as opposed to <b>network firewalls</b>, which protect a whole network edge or segment.</p></div><div class="card"><div class="sec-head"><h2>2. Key terms: tap to flip</h2><label>Done <input type="checkbox" data-sec="terms"></label></div><div class="fcards"><button class="fc" type="button"><div class="inner"><div class="face front">Allow / Deny / Drop</div><div class="face back">Allow lets traffic through. Deny blocks it and tells the sender. Drop silently discards it, which gives an attacker less information.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">5-tuple</div><div class="face back">Source IP, destination IP, source port, destination port and protocol. These are the fields most rules match on.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Stateful</div><div class="face back">The firewall tracks connections, so reply traffic is allowed automatically.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Implicit deny</div><div class="face back">The hidden final rule that blocks anything not explicitly allowed.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Ingress / Egress</div><div class="face back">Ingress is traffic coming in. Egress is traffic going out. Egress filtering helps stop malware phoning home.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">DMZ</div><div class="face back">A separate network zone for public-facing servers (like a web server), kept apart from the internal network.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">NGFW</div><div class="face back">Next-generation firewall: application awareness, IPS and user-based rules on top of normal filtering.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">NAT</div><div class="face back">Network Address Translation: lets many internal private IPs share one public IP. It's usually done on the firewall.</div></div></button></div></div><div class="card"><div class="sec-head"><h2>3. How it shows up in a SOC</h2><label>Done <input type="checkbox" data-sec="soc"></label></div><p>Firewall logs are one of the main data sources in a SIEM. Analysts look for things like:</p><p>• <b>Port scans</b>: one source hitting lots of ports or IPs in a short time, with mostly denies.</p><p>• <b>Beaconing</b>: an internal PC connecting out to the same external IP at regular intervals (e.g. every 60 seconds), which is a classic sign of malware command-and-control (C2).</p><p>• <b>Unusual egress</b>: a PC talking out on odd ports, or a big data transfer to an unknown destination late at night (possible data theft).</p><p>• <b>Allowed traffic to known-bad IPs</b>: matched against threat intelligence lists.</p><p>When an alert fires, a junior analyst checks the source host, the destination's reputation (e.g. on VirusTotal or AbuseIPDB), what else that host has done, and whether it's a false positive (like a backup server legitimately moving lots of data).</p></div><div class="card"><div class="sec-head"><h2>4. Quiz</h2><label>Done <input type="checkbox" data-sec="quiz"></label></div><p class="muted">Score: <b id="score" style="color:var(--acc)">0 / 10</b> <button class="btn small ghost" id="qReset">Retry quiz</button></p><div id="quiz"></div></div><div class="card"><div class="sec-head"><h2>5. Try it in your homelab</h2><label>Done <input type="checkbox" data-sec="labs"></label></div><label class="chk"><input type="checkbox" data-lab="0"><span>Open Windows Defender Firewall with Advanced Security (search 'wf.msc'). Look at the inbound rules, then create a rule that blocks ping (ICMPv4) and test it from another device.</span></label><label class="chk"><input type="checkbox" data-lab="1"><span>In your homelab, install pfSense or OPNsense in a VM as a firewall between two virtual networks. Write an allow rule for HTTPS only and test what's blocked.</span></label><label class="chk"><input type="checkbox" data-lab="2"><span>Run an Nmap scan from Kali against a lab VM, then find the scan in the firewall or Wazuh logs. Spotting your own scan is great SOC practice.</span></label></div>
+</div>
+<script>
+(function(){
+
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function gbp(x){x=isFinite(x)?x:0;return '£'+x.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function ukDate(s){if(!s)return '';var p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+
+var Q=[["What does a firewall do when traffic matches no rule, under best practice?", ["Allows it", "Blocks it (implicit deny)", "Logs it and allows it", "Sends it to the DMZ"], 1, "Default deny: anything not explicitly allowed is blocked."], ["Which is NOT part of the 5-tuple?", ["Source IP", "Destination port", "MAC address", "Protocol"], 2, "The 5-tuple is source/destination IP, source/destination port and protocol. MAC addresses are layer 2."], ["A stateful firewall\u2026", ["Inspects only single packets with no memory", "Tracks connections and allows reply traffic automatically", "Only works on Wi-Fi", "Encrypts traffic"], 1, "Stateful means it remembers established connections."], ["What's the difference between deny and drop?", ["No difference", "Drop silently discards; deny rejects and tells the sender", "Deny is silent; drop replies", "Drop allows the traffic"], 1, "Dropping gives an attacker less information."], ["Rules are usually processed\u2026", ["Bottom to top", "Randomly", "Top down, first match wins", "All at once, most specific wins"], 2, "Order matters, which is why a broad 'allow any' near the top is dangerous."], ["A PC connects to the same external IP every 60 seconds, all night. This suggests\u2026", ["Normal browsing", "Beaconing to a C2 server", "A port scan", "NAT"], 1, "Regular, timed outbound connections are a classic C2 beacon pattern."], ["Where would you put a public web server?", ["Inside the internal LAN", "In a DMZ", "On the firewall itself", "On a user's laptop"], 1, "A DMZ keeps public-facing servers apart from internal systems."], ["Egress filtering means\u2026", ["Filtering incoming traffic", "Filtering outgoing traffic", "Filtering emails", "Filtering Wi-Fi"], 1, "Egress is outbound. It's useful for stopping malware calling home and data being stolen."], ["One IP hits 1,000 different ports on a server in 30 seconds, mostly denied. What's happening?", ["Beaconing", "A port scan", "A software update", "A DNS lookup"], 1, "Lots of ports in a short time from one source means scanning."], ["What can an NGFW do that a basic firewall can't?", ["Block by IP", "Block by port", "Identify applications and run IPS signatures", "Use rules"], 2, "Application awareness and IPS are what make it 'next-gen'."]];var K='orion-study-firewalls-v1';
+var st=load(K,{sec:{},lab:{},ans:{}});st.sec=st.sec||{};st.lab=st.lab||{};st.ans=st.ans||{};
+function prog(){var n=0;['explain','terms','soc','quiz','labs'].forEach(function(k){if(st.sec[k])n++;});$('pTxt').textContent=n+' / 5 sections';$('pPct').textContent=(n*20)+'%';$('pBar').style.width=(n*20)+'%';}
+[].forEach.call(document.querySelectorAll('[data-sec]'),function(c){c.checked=!!st.sec[c.dataset.sec];c.addEventListener('change',function(){st.sec[c.dataset.sec]=c.checked;save(K,st);prog();});});
+[].forEach.call(document.querySelectorAll('[data-lab]'),function(c){c.checked=!!st.lab[c.dataset.lab];c.closest('.chk').classList.toggle('done',c.checked);c.addEventListener('change',function(){st.lab[c.dataset.lab]=c.checked;c.closest('.chk').classList.toggle('done',c.checked);save(K,st);});});
+[].forEach.call(document.querySelectorAll('.fc'),function(f){f.addEventListener('click',function(){f.classList.toggle('flip');});});
+function drawQuiz(){var sc=0;$('quiz').innerHTML=Q.map(function(q,i){var a=st.ans[i];if(a===q[2])sc++;
+  return '<div style="margin:14px 0"><b>'+(i+1)+'. '+esc(q[0])+'</b>'+q[1].map(function(o,j){var cls='';if(a!=null){if(j===q[2])cls=' right';else if(j===a)cls=' wrong';}return '<button class="opt'+cls+'" data-q="'+i+'" data-o="'+j+'"'+(a!=null?' disabled':'')+'>'+esc(o)+'</button>';}).join('')+(a!=null?'<div class="why">'+(a===q[2]?'✅ Correct. ':'❌ Not quite. ')+esc(q[3])+'</div>':'')+'</div>';}).join('');
+  $('score').textContent=sc+' / '+Q.length;}
+$('quiz').addEventListener('click',function(e){var q=e.target.dataset.q;if(q==null)return;st.ans[q]=+e.target.dataset.o;save(K,st);drawQuiz();
+  if(Object.keys(st.ans).length===Q.length&&!st.sec.quiz){st.sec.quiz=true;save(K,st);document.querySelector('[data-sec=quiz]').checked=true;prog();}});
+$('qReset').addEventListener('click',function(){st.ans={};save(K,st);drawQuiz();});
+drawQuiz();prog();
+
+})();
+</script>
+</body>
+</html>

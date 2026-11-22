@@ -29,6 +29,19 @@ a.card:hover,a.card:focus{border-color:var(--cyan);transform:translateY(-2px)}
 .hq{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;background:linear-gradient(135deg,#0b2236,#0b1220);border:1px solid #1f4a5e;border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:0 0 24px rgba(62,230,255,.12)}
 .hq .orb{flex:0 0 54px;height:54px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#bff6ff 0,#3ee6ff 18%,#0b6f8f 48%,#04202e 75%);box-shadow:0 0 22px rgba(62,230,255,.55)}
 .hq b{display:block;font-size:19px}.hq small{color:var(--dim)}
+
+.bar{display:flex;gap:10px;margin-bottom:14px}.bar input{margin:0;flex:1}
+.tidy{flex:0 0 auto;min-height:48px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--cyan);font:600 15px system-ui,sans-serif;cursor:pointer}
+.tidy.on{background:#0b2a38;border-color:var(--cyan);box-shadow:0 0 14px rgba(62,230,255,.3)}
+.tbar{display:none;margin:0 0 14px;padding:12px 14px;border:1px dashed #1f4a5e;border-radius:12px;color:var(--dim);font-size:14px}
+.tbar.on{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tbar button{min-height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel);color:var(--cyan);font:600 14px system-ui,sans-serif;cursor:pointer}
+body.tidying a.card{position:relative;border-style:dashed}
+body.tidying a.card::after{content:"✕ Tap to hide";position:absolute;top:10px;right:12px;font:600 12px system-ui,sans-serif;color:#ff6b7a}
+body.tidying a.card.gone{opacity:.4}
+body.tidying a.card.gone::after{content:"↩ Tap to bring back";color:var(--cyan)}
+a.card.gone{display:none}
+body.tidying a.card.gone{display:block}
 </style>
 </head>
 <body>
@@ -37,7 +50,8 @@ a.card:hover,a.card:focus{border-color:var(--cyan);transform:translateY(-2px)}
   <h1>THE <span>HUB</span></h1>
   <p class="sub">Everything Claude has built for Rob. Works on phone, Tab and PC.</p>
   <a class="hq" href="https://claude.ai/artifact/FMDgfVWRKrKcDhDJZiXEhM"><span class="orb" aria-hidden="true"></span><span><b>Talk to Orion HQ →</b><small>Your voice assistant: logs your stuff, knows your day, syncs everywhere. Opens on claude.ai.</small></span></a>
-  <input id="q" type="search" placeholder="Search tools…" aria-label="Search tools">
+  <div class="bar"><input id="q" type="search" placeholder="Search tools…" aria-label="Search tools"><button class="tidy" id="tidy" type="button">🧹 Tidy</button></div>
+  <div class="tbar" id="tbar"><span id="tcount">Tap a tool to hide it.</span><button id="restore" type="button">Restore all</button></div>
   <div class="grid" id="grid">
 <!-- MISSIONS:START -->
 <a class="card" href="missions/motorbike-licence-roadmap/"><b>Motorbike Licence Roadmap</b><small>Every step from CBT to full licence, with checklists, rough costs and a lesson log.</small><time>2026-11-22</time></a>
@@ -56,15 +70,47 @@ a.card:hover,a.card:focus{border-color:var(--cyan);transform:translateY(-2px)}
 </div>
 <script>
 (function(){
+  var KEY='orion-hub-hidden';
   var cards=[].slice.call(document.querySelectorAll('#grid .card'));
-  var empty=document.getElementById('empty');
-  if(!cards.length){empty.hidden=false;}
-  document.getElementById('q').addEventListener('input',function(){
-    var t=this.value.toLowerCase(),shown=0;
-    cards.forEach(function(c){var m=c.textContent.toLowerCase().indexOf(t)>-1;c.style.display=m?'':'none';if(m)shown++;});
+  var empty=document.getElementById('empty'),q=document.getElementById('q');
+  var tidyBtn=document.getElementById('tidy'),tbar=document.getElementById('tbar'),tcount=document.getElementById('tcount');
+  var hidden=[],tidying=false;
+  try{hidden=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(hidden))hidden=[];}catch(e){hidden=[];}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(hidden));}catch(e){}}
+  function key(c){return c.getAttribute('href');}
+  function apply(){
+    var t=q.value.toLowerCase(),shown=0;
+    cards.forEach(function(c){
+      var gone=hidden.indexOf(key(c))>-1;
+      c.classList.toggle('gone',gone);
+      var m=c.textContent.toLowerCase().indexOf(t)>-1;
+      c.style.display=m?'':'none';
+      if(m&&(!gone||tidying))shown++;
+    });
+    tcount.textContent=hidden.length?hidden.length+' hidden. Tap a faded one to bring it back.':'Tap a tool to hide it.';
     empty.hidden=shown>0;
-    empty.textContent=cards.length?'No tools match that search.':'Nothing here yet. Send your first mission from the Claude app.';
+    empty.textContent=cards.length&&hidden.length===cards.length&&!tidying?'Everything is hidden. Tap Tidy, then Restore all.':(cards.length?'No tools match that search.':'Nothing here yet. Send your first mission from the Claude app.');
+  }
+  q.addEventListener('input',apply);
+  tidyBtn.addEventListener('click',function(){
+    tidying=!tidying;
+    document.body.classList.toggle('tidying',tidying);
+    tidyBtn.classList.toggle('on',tidying);
+    tidyBtn.textContent=tidying?'✔ Done':'🧹 Tidy';
+    tbar.classList.toggle('on',tidying);
+    apply();
   });
+  document.getElementById('restore').addEventListener('click',function(){hidden=[];save();apply();});
+  cards.forEach(function(c){
+    c.addEventListener('click',function(e){
+      if(!tidying)return;
+      e.preventDefault();
+      var k=key(c),i=hidden.indexOf(k);
+      if(i>-1)hidden.splice(i,1);else hidden.push(k);
+      save();apply();
+    });
+  });
+  apply();
 })();
 </script>
 <!-- Card template for Claude (copy inside the MISSIONS block, newest first):

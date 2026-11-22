@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#04070d">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Orion Workshop — Hub</title>
 <style>
 :root{--bg:#05080f;--panel:#0b1220;--line:#1c2b48;--cyan:#3ee6ff;--text:#d8e6ff;--dim:#7d93b8}
@@ -66,5 +70,6 @@ a.card:hover,a.card:focus{border-color:var(--cyan);transform:translateY(-2px)}
 <!-- Card template for Claude (copy inside the MISSIONS block, newest first):
 <a class="card" href="missions/NAME/"><b>Tool name</b><small>One-line description</small><time>YYYY-MM-DD</time></a>
 -->
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
 </body>
 </html>

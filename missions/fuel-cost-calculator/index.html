@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuel Cost Calculator — Orion Workshop</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--panel2:#0f1a2e;--line:#1c2b48;--cyan:#3ee6ff;--amber:#ffb547;--text:#d8e6ff;--dim:#7d93b8;--mono:ui-monospace,Consolas,monospace}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;
+background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 60px}
+a.back{color:var(--dim);text-decoration:none;font:13px var(--mono)}
+.tag{font:600 12px var(--mono);letter-spacing:.2em;color:var(--cyan);margin-top:14px}
+h1{font:800 clamp(28px,8vw,40px)/1.05 system-ui,sans-serif;margin:6px 0 4px}
+h1 span{color:var(--cyan);text-shadow:0 0 20px rgba(62,230,255,.5)}
+p.sub{color:var(--dim);margin:0 0 18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+label{display:block;font:600 13px var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+label:first-child{margin-top:0}
+.field{display:flex;align-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.field:focus-within{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(62,230,255,.15)}
+.field input{flex:1;min-width:0;background:none;border:0;color:var(--text);font:600 20px system-ui,sans-serif;padding:14px}
+.field input:focus{outline:none}
+.field span{padding:0 14px;color:var(--dim);font:14px var(--mono)}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.days button{min-height:48px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--dim);font:700 16px system-ui;cursor:pointer}
+.days button.on{background:var(--cyan);color:#021018;border-color:var(--cyan);box-shadow:0 0 14px rgba(62,230,255,.4)}
+.big{text-align:center;padding:20px 16px}
+.big small{display:block;font:600 12px var(--mono);letter-spacing:.14em;color:var(--dim)}
+.big b{display:block;font:800 clamp(40px,13vw,60px)/1.1 system-ui;color:var(--cyan);text-shadow:0 0 26px rgba(62,230,255,.45)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{display:block;font:600 11px var(--mono);letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.stat b{font:800 22px system-ui}
+.stat.a b{color:var(--amber)}
+.what{margin-top:4px}
+.what .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.what input[type=range]{flex:1;accent-color:var(--cyan);min-height:40px}
+.what b{color:var(--amber);font:700 18px var(--mono);min-width:62px;text-align:right}
+.note{color:var(--dim);font-size:13px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../../">← Hub</a>
+  <div class="tag">// MISSION · FUEL</div>
+  <h1>FUEL <span>COST</span></h1>
+  <p class="sub">What your commute really costs you. Updates as you type, and remembers your numbers.</p>
+
+  <div class="card">
+    <label for="mpg">Your car's MPG</label>
+    <div class="field"><input id="mpg" type="number" inputmode="decimal" min="1" step="0.1" value="45"><span>mpg</span></div>
+
+    <label for="ppl">Fuel price</label>
+    <div class="field"><input id="ppl" type="number" inputmode="decimal" min="1" step="0.1" value="140"><span>p / litre</span></div>
+
+    <label for="miles">Miles each way</label>
+    <div class="field"><input id="miles" type="number" inputmode="decimal" min="0" step="0.1" value="10"><span>miles</span></div>
+
+    <label>Days you drive to work</label>
+    <div class="days" id="days"></div>
+  </div>
+
+  <div class="card big">
+    <small>PER MONTH</small>
+    <b id="month">£0.00</b>
+  </div>
+
+  <div class="grid">
+    <div class="stat"><small>Per return trip</small><b id="trip">£0.00</b></div>
+    <div class="stat"><small>Per week</small><b id="week">£0.00</b></div>
+    <div class="stat a"><small>Per year</small><b id="year">£0.00</b></div>
+    <div class="stat"><small>Per mile</small><b id="pmile">0p</b></div>
+    <div class="stat"><small>Litres / week</small><b id="lweek">0</b></div>
+    <div class="stat"><small>Miles / year</small><b id="myear">0</b></div>
+  </div>
+
+  <div class="card what">
+    <label for="bump">What if fuel goes up or down?</label>
+    <div class="row"><input id="bump" type="range" min="-20" max="30" step="1" value="0"><b id="bumpv">+0p</b></div>
+    <p class="note" id="bumpres">Move the slider to see how a price change hits your monthly cost.</p>
+  </div>
+
+  <p class="note">Uses UK gallons (4.546 litres). Monthly = weekly × 52 ÷ 12. Doesn't count wear, tyres or parking.</p>
+</div>
+<script>
+(function(){
+  var KEY='orion-fuel-calc-v1', L=4.54609, names=['M','T','W','T','F','S','S'];
+  var st={mpg:45,ppl:140,miles:10,days:[1,1,1,1,1,0,0]};
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.days)st=s;}catch(e){}
+  var $=function(id){return document.getElementById(id);};
+  ['mpg','ppl','miles'].forEach(function(k){$(k).value=st[k];$(k).addEventListener('input',function(){st[k]=parseFloat(this.value)||0;go();});});
+  var dEl=$('days');
+  names.forEach(function(n,i){var b=document.createElement('button');b.type='button';b.textContent=n;b.setAttribute('aria-label','Day '+(i+1));
+    b.addEventListener('click',function(){st.days[i]=st.days[i]?0:1;go();});dEl.appendChild(b);});
+  $('bump').addEventListener('input',go);
+  function gbp(x){return '£'+(isFinite(x)?x:0).toFixed(2);}
+  function costPerMile(ppl){return st.mpg>0?(ppl/100)*L/st.mpg:0;}
+  function go(){
+    var n=st.days.reduce(function(a,b){return a+b;},0);
+    [].forEach.call(dEl.children,function(b,i){b.classList.toggle('on',!!st.days[i]);});
+    var cpm=costPerMile(st.ppl), tripMiles=st.miles*2, wkMiles=tripMiles*n;
+    var trip=cpm*tripMiles, week=trip*n, month=week*52/12, year=week*52;
+    $('trip').textContent=gbp(trip);$('week').textContent=gbp(week);$('month').textContent=gbp(month);$('year').textContent=gbp(year);
+    $('pmile').textContent=(cpm*100).toFixed(1)+'p';
+    $('lweek').textContent=(st.mpg>0?wkMiles/st.mpg*L:0).toFixed(1);
+    $('myear').textContent=Math.round(wkMiles*52).toLocaleString('en-GB');
+    var bump=parseInt($('bump').value,10)||0;
+    $('bumpv').textContent=(bump>=0?'+':'')+bump+'p';
+    if(bump===0){$('bumpres').textContent='Move the slider to see how a price change hits your monthly cost.';}
+    else{var m2=costPerMile(st.ppl+bump)*tripMiles*n*52/12, d=m2-month;
+      $('bumpres').textContent='At '+(st.ppl+bump).toFixed(1)+'p/litre you\'d pay '+gbp(m2)+' a month ('+(d>=0?'+':'−')+gbp(Math.abs(d))+').';}
+    try{localStorage.setItem(KEY,JSON.stringify(st));}catch(e){}
+  }
+  go();
+})();
+</script>
+</body>
+</html>

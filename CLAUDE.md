@@ -21,6 +21,8 @@ Never put personal info, passwords, keys, addresses or work-confidential stuff i
 - If it has ticks, progress or saved state, use localStorage wrapped in try/catch.
 - UK units and spelling: £, miles, litres.
 - No API keys, no paid services, no backend. GitHub Pages is static hosting only.
+- Make it installable: in <head> add `<link rel="manifest" href="../../manifest.webmanifest">`, `<meta name="theme-color" content="#04070d">` and `<link rel="icon" href="../../icons/icon-192.png">`, and just before </body> add
+  `<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('../../sw.js').catch(function(){});});}</script>`
 
 ## Every mission must also
 1. Write `missions/<name>/MISSION.md` covering what was asked, what was built, how to use it and ideas for v2.

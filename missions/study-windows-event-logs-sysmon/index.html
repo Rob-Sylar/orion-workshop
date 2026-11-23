@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#04070d">
+<link rel="icon" href="../../icons/icon-192.png">
+<title>Study: Windows Event Logs &amp; Sysmon — Orion Workshop</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--panel2:#0f1a2e;--line:#1c2b48;--cyan:#3ee6ff;--amber:#ffb547;--green:#4dff9a;--red:#ff5d6c;--text:#d8e6ff;--dim:#7d93b8;--mono:ui-monospace,Consolas,monospace;--acc:var(--cyan)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+a.back{color:var(--dim);text-decoration:none;font:13px var(--mono)}
+.tag{font:600 12px var(--mono);letter-spacing:.2em;color:var(--acc);margin-top:14px;text-transform:uppercase}
+h1{font:800 clamp(28px,8vw,42px)/1.05 system-ui,sans-serif;margin:6px 0 4px;text-transform:uppercase}
+h1 span{color:var(--acc);text-shadow:0 0 20px var(--acc)}
+h2{font:800 19px/1.25 system-ui,sans-serif;margin:0 0 10px}
+h3{font:700 16px system-ui;margin:0 0 6px}
+p.sub{color:var(--dim);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+label.f{display:block;font:600 12px var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);font:16px system-ui,sans-serif;padding:12px;min-height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(62,230,255,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border:0;border-radius:10px;background:var(--acc);color:#021018;font:800 15px system-ui;cursor:pointer}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+.btn.small{min-height:36px;padding:0 12px;font-size:13px}
+.btn.danger{background:none;border:1px solid #5a2030;color:var(--red)}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{display:block;font:600 11px var(--mono);letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.stat b{font:800 22px system-ui;color:var(--acc)}
+.bar{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px var(--acc);transition:width .4s}
+.prog{display:flex;justify-content:space-between;font:600 13px var(--mono);color:var(--dim);margin-bottom:6px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{appearance:none;flex:0 0 26px;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;margin-top:1px;cursor:pointer;position:relative;background:#06101c}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+.chk.done span{color:var(--dim);text-decoration:line-through}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{flex:0 0 auto;min-height:42px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--dim);font:700 14px system-ui;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#021018;border-color:var(--acc)}
+.pill{display:inline-block;font:700 11px var(--mono);padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.pill.g{color:var(--green);border-color:#1f5e44}.pill.a{color:var(--amber);border-color:#5e4a1f}.pill.r{color:var(--red);border-color:#5a2030}.pill.c{color:var(--cyan);border-color:#1f4a5e}
+.muted{color:var(--dim);font-size:14px}
+.note{border-left:3px solid var(--amber);background:#1a1407;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;color:#f3dcb0;font-size:14px}
+.empty{color:var(--dim);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px}
+.list .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .item:last-child{border-bottom:0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+details>summary{list-style:none;cursor:pointer;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"＋";color:var(--acc);font-weight:900}
+details[open]>summary::after{content:"－"}
+details .in{padding:0 16px 16px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr 1fr}.stat b{font-size:19px}}
+</style>
+<style>
+.fcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.fc{perspective:800px;min-height:130px;cursor:pointer;background:none;border:0;padding:0;color:inherit;text-align:left;font:inherit}
+.fc .inner{position:relative;width:100%;height:100%;min-height:130px;transition:transform .5s;transform-style:preserve-3d}
+.fc.flip .inner{transform:rotateY(180deg)}
+.fc .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;align-items:center;justify-content:center;text-align:center}
+.fc .front{background:var(--panel2);font:800 17px system-ui;color:var(--acc)}
+.fc .back{background:#0a1a2a;transform:rotateY(180deg);font-size:14px}
+.opt{display:block;width:100%;text-align:left;min-height:48px;margin:6px 0;padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--text);font:15px system-ui;cursor:pointer}
+.opt.right{border-color:var(--green);background:#07180f}.opt.wrong{border-color:var(--red);background:#1b0a0e}
+.why{margin-top:6px;font-size:14px;color:#c9ffe0}
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.sec-head label{flex:0 0 auto;display:flex;gap:6px;align-items:center;font:600 12px var(--mono);color:var(--dim)}
+.sec-head input{appearance:none;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;background:#06101c;position:relative;cursor:pointer}
+.sec-head input:checked{background:var(--green);border-color:var(--green)}
+.sec-head input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+</style><style>code{background:#0a1a2a;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font:13px var(--mono);color:var(--cyan);word-break:break-word}</style></head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">← Hub</a>
+<div class="tag">// Study · Cyber</div>
+<h1>Event Logs <span>&amp; Sysmon</span></h1>
+<p class="sub">How Windows logs what happens, what Sysmon adds, and the event IDs a SOC analyst searches every day.</p>
+<div class="card"><div class="prog"><span id="pTxt">0 / 5 sections</span><span id="pPct">0%</span></div><div class="bar"><i id="pBar"></i></div></div>
+<div class="card"><div class="sec-head"><h2>1. Plain English</h2><label>Done <input type="checkbox" data-sec="explain"></label></div><p>The <b>Windows Event Log</b> is the built-in diary of what happens on a Windows machine. Logons, services starting, accounts created, policies changed: it all gets written down. You view it in <b>Event Viewer</b> (eventvwr.msc) or pull it with PowerShell (<code>Get-WinEvent</code>).</p><p><b>The main logs.</b> <b>Security</b> holds logons, account changes and audit events. <b>System</b> holds drivers, services and reboots. <b>Application</b> holds software messages. There are also many <b>Applications and Services Logs</b>, such as PowerShell/Operational and Windows Defender/Operational.</p><p><b>Every event has an ID</b>, a source (provider), a timestamp, a level and a block of fields (user, IP, process and so on). The ID tells you what kind of thing happened, so learning a handful of IDs makes you quick.</p><p><b>The catch:</b> out of the box, Windows doesn't log process creation with command lines, and it says very little about network connections or file hashes. That's where <b>Sysmon</b> comes in.</p><p><b>Sysmon</b> (System Monitor) is a free Microsoft Sysinternals tool. Once installed as a service with a config file, it writes rich events to its own log (Microsoft-Windows-Sysmon/Operational): full process command lines, parent processes, file hashes, network connections, DNS queries, registry changes and more.</p><p><b>Why it matters:</b> attackers live in processes, command lines and network connections. Sysmon makes those visible, and a SIEM can then collect them. The config matters a lot. A noisy default floods you, so most people start from a community config such as SwiftOnSecurity's sysmon-config or Olaf Hartong's sysmon-modular.</p><p><b>Forwarding:</b> in a company, logs are usually sent to a SIEM by an agent, or by <b>Windows Event Forwarding (WEF)</b> to a central collector, so analysts don't have to log in to each machine.</p></div>
+<div class="card"><div class="sec-head"><h2>2. Key terms: tap to flip</h2><label>Done <input type="checkbox" data-sec="terms"></label></div><div class="fcards"><button class="fc" type="button"><div class="inner"><div class="face front">Event ID</div><div class="face back">A number that says what type of event it is, e.g. 4624 = successful logon.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Event Viewer</div><div class="face back">The Windows GUI for browsing event logs. Run eventvwr.msc.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Logon Type</div><div class="face back">A field in 4624/4625. 2 = at the keyboard, 3 = network (e.g. file share), 10 = Remote Desktop.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Sysmon</div><div class="face back">Free Sysinternals service that logs process creation, network connections, hashes and more.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Sysmon config</div><div class="face back">An XML file that decides what Sysmon logs and ignores. It controls the noise.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Parent process</div><div class="face back">The process that started another one. Word starting PowerShell is a classic red flag.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Command line</div><div class="face back">The full text used to start a process, including arguments. Gold dust for investigations.</div></div></button><button class="fc" type="button"><div class="inner"><div class="face front">Windows Event Forwarding</div><div class="face back">Built-in way to send events from many machines to one collector.</div></div></button></div></div>
+<div class="card"><div class="sec-head"><h2>3. How it shows up in a SOC</h2><label>Done <input type="checkbox" data-sec="soc"></label></div><p>Event logs are the evidence you work from. Typical uses:</p><p>• <b>Brute force:</b> lots of <b>4625</b> (failed logon) from one source, then a <b>4624</b> (success). Check the Logon Type and source IP.</p><p>• <b>New persistence or accounts:</b> <b>4720</b> (account created), <b>4732</b> (added to local Administrators), <b>7045</b> (new service installed), <b>4698</b> (scheduled task created).</p><p>• <b>Covering tracks:</b> <b>1102</b> (Security log cleared) or <b>104</b> (System log cleared). Almost never innocent.</p><p>• <b>Process activity (Sysmon):</b> <b>Event ID 1</b> process created. Look for odd parent/child pairs like winword.exe → powershell.exe, long encoded commands (<code>-enc</code>) and tools run from Temp or Downloads.</p><p>• <b>Network (Sysmon):</b> <b>Event ID 3</b> network connection. Which process called out, and to where? <b>Event ID 22</b> logs DNS queries.</p><p>• <b>Other Sysmon IDs:</b> <b>7</b> image loaded, <b>8</b> CreateRemoteThread (injection), <b>10</b> process access (e.g. touching LSASS to steal credentials), <b>11</b> file created, <b>13</b> registry value set.</p><p>A good habit: when an alert fires, pull the events either side of it for that host and user, build a timeline, and note the evidence (event ID, time, process, command line) in your ticket.</p></div>
+<div class="card"><div class="sec-head"><h2>4. Quiz</h2><label>Done <input type="checkbox" data-sec="quiz"></label></div><p class="muted">Score: <b id="score" style="color:var(--acc)">0 / 10</b> <button class="btn small ghost" id="qReset">Retry quiz</button></p><div id="quiz"></div></div>
+<div class="card"><div class="sec-head"><h2>5. Try it in your homelab</h2><label>Done <input type="checkbox" data-sec="labs"></label></div><label class="chk"><input type="checkbox" data-lab="0"><span>Install Sysmon on a Windows VM (Sysinternals download) with the SwiftOnSecurity config: <code>sysmon64 -accepteula -i sysmonconfig.xml</code>. Open Event Viewer → Applications and Services Logs → Microsoft → Windows → Sysmon → Operational and watch events appear as you open programs.</span></label><label class="chk"><input type="checkbox" data-lab="1"><span>Generate test events and find them: fail a logon 5 times (4625), create a local user and add it to Administrators (4720, 4732), then open cmd and run <code>whoami</code> and find the Sysmon Event ID 1 with its command line and parent process. Practise with PowerShell: <code>Get-WinEvent -FilterHashtable @{LogName='Security';Id=4625} -MaxEvents 10</code>.</span></label><label class="chk"><input type="checkbox" data-lab="2"><span>Do the free TryHackMe rooms 'Windows Event Logs' and 'Sysmon', then forward your VM's logs into Wazuh or Splunk and write a mini triage note for one event: what happened, when, who, and whether it's suspicious.</span></label></div>
+</div>
+<script>
+(function(){
+
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function gbp(x){x=isFinite(x)?x:0;return '£'+x.toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function ukDate(s){if(!s)return '';var p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+
+var Q=[["Which Windows log holds logon and account audit events?", ["Application", "Security", "Setup", "Forwarded Events"], 1, "The Security log holds logon events (4624/4625) and account changes."], ["Event ID 4625 means\u2026", ["Successful logon", "Failed logon", "Account created", "Log cleared"], 1, "4625 is a failed logon. Many in a row can mean password guessing."], ["Logon Type 10 in a 4624 event usually means\u2026", ["Console logon", "Network logon", "Remote Desktop (RDP)", "Service logon"], 2, "Type 10 is RemoteInteractive, i.e. RDP. Worth a look if it's unexpected."], ["Event ID 1102 tells you\u2026", ["A user logged off", "The Security log was cleared", "A service started", "A USB was plugged in"], 1, "Clearing the Security log is a common attacker trick to hide activity."], ["Event ID 7045 (System log) records\u2026", ["A new service being installed", "A failed update", "A user lockout", "A DNS query"], 0, "New services are a common persistence method, so 7045 is a favourite to check."], ["What is Sysmon?", ["A built-in Windows antivirus", "A free Sysinternals tool that logs detailed system activity", "A firewall", "A backup tool"], 1, "Sysmon is a free Microsoft Sysinternals service that writes rich telemetry."], ["Which Sysmon Event ID is 'Process Create'?", ["1", "3", "11", "22"], 0, "Event ID 1 is process creation, with command line, parent and hashes."], ["Which Sysmon Event ID records a network connection?", ["1", "3", "7", "13"], 1, "Event ID 3 is network connection. 22 is DNS query."], ["Why does a Sysmon config file matter?", ["It makes Sysmon free", "It controls what's logged and cuts the noise", "It encrypts the logs", "It's needed to open Event Viewer"], 1, "Without a tuned config Sysmon can be very noisy, or miss the things you care about."], ["winword.exe starting powershell.exe with a long encoded command is\u2026", ["Normal Office behaviour", "Highly suspicious, a classic malicious macro pattern", "A Windows update", "A printer driver"], 1, "Office apps spawning PowerShell with -enc is a well-known malware delivery pattern."]];var K='orion-study-winlogs-sysmon-v1';
+var st=load(K,{sec:{},lab:{},ans:{}});st.sec=st.sec||{};st.lab=st.lab||{};st.ans=st.ans||{};
+function prog(){var n=0;['explain','terms','soc','quiz','labs'].forEach(function(k){if(st.sec[k])n++;});$('pTxt').textContent=n+' / 5 sections';$('pPct').textContent=(n*20)+'%';$('pBar').style.width=(n*20)+'%';}
+[].forEach.call(document.querySelectorAll('[data-sec]'),function(c){c.checked=!!st.sec[c.dataset.sec];c.addEventListener('change',function(){st.sec[c.dataset.sec]=c.checked;save(K,st);prog();});});
+[].forEach.call(document.querySelectorAll('[data-lab]'),function(c){c.checked=!!st.lab[c.dataset.lab];c.closest('.chk').classList.toggle('done',c.checked);c.addEventListener('change',function(){st.lab[c.dataset.lab]=c.checked;c.closest('.chk').classList.toggle('done',c.checked);save(K,st);});});
+[].forEach.call(document.querySelectorAll('.fc'),function(f){f.addEventListener('click',function(){f.classList.toggle('flip');});});
+function drawQuiz(){var sc=0;$('quiz').innerHTML=Q.map(function(q,i){var a=st.ans[i];if(a===q[2])sc++;
+  return '<div style="margin:14px 0"><b>'+(i+1)+'. '+esc(q[0])+'</b>'+q[1].map(function(o,j){var cls='';if(a!=null){if(j===q[2])cls=' right';else if(j===a)cls=' wrong';}return '<button class="opt'+cls+'" data-q="'+i+'" data-o="'+j+'"'+(a!=null?' disabled':'')+'>'+esc(o)+'</button>';}).join('')+(a!=null?'<div class="why">'+(a===q[2]?'✅ Correct. ':'❌ Not quite. ')+esc(q[3])+'</div>':'')+'</div>';}).join('');
+  $('score').textContent=sc+' / '+Q.length;}
+$('quiz').addEventListener('click',function(e){var q=e.target.dataset.q;if(q==null)return;st.ans[q]=+e.target.dataset.o;save(K,st);drawQuiz();
+  if(Object.keys(st.ans).length===Q.length&&!st.sec.quiz){st.sec.quiz=true;save(K,st);document.querySelector('[data-sec=quiz]').checked=true;prog();}});
+$('qReset').addEventListener('click',function(){st.ans={};save(K,st);drawQuiz();});
+drawQuiz();prog();
+
+})();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('../../sw.js').catch(function(){});});}</script>
+</body>
+</html>

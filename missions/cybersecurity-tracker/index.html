@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="../../manifest.webmanifest">
+<meta name="theme-color" content="#04070d">
+<link rel="icon" href="../../icons/icon-192.png">
+<title>Cybersecurity Tracker — Orion Workshop</title>
+<style>
+:root{--bg:#05080f;--panel:#0b1220;--panel2:#0f1a2e;--line:#1c2b48;--cyan:#3ee6ff;--amber:#ffb547;--green:#4dff9a;--red:#ff5d6c;--text:#d8e6ff;--dim:#7d93b8;--mono:ui-monospace,Consolas,monospace;--acc:var(--cyan)}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.5 system-ui,"Segoe UI",Roboto,sans-serif;background-image:radial-gradient(circle at 20% -10%,#0d2a44 0,transparent 45%);background-attachment:fixed}
+.wrap{max-width:720px;margin:0 auto;padding:20px 16px 80px}
+a.back{color:var(--dim);text-decoration:none;font:13px var(--mono)}
+.tag{font:600 12px var(--mono);letter-spacing:.2em;color:var(--acc);margin-top:14px;text-transform:uppercase}
+h1{font:800 clamp(28px,8vw,42px)/1.05 system-ui,sans-serif;margin:6px 0 4px;text-transform:uppercase}
+h1 span{color:var(--acc);text-shadow:0 0 20px var(--acc)}
+h2{font:800 19px/1.25 system-ui,sans-serif;margin:0 0 10px}
+h3{font:700 16px system-ui;margin:0 0 6px}
+p.sub{color:var(--dim);margin:0 0 16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;margin:12px 0}
+label.f{display:block;font:600 12px var(--mono);color:var(--dim);letter-spacing:.06em;text-transform:uppercase;margin:12px 0 6px}
+input,select,textarea{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);font:16px system-ui,sans-serif;padding:12px;min-height:48px}
+textarea{min-height:96px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--acc);box-shadow:0 0 0 3px rgba(62,230,255,.15)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:48px;padding:0 18px;border:0;border-radius:10px;background:var(--acc);color:#021018;font:800 15px system-ui;cursor:pointer}
+.btn.ghost{background:none;border:1px solid var(--line);color:var(--dim)}
+.btn.small{min-height:36px;padding:0 12px;font-size:13px}
+.btn.danger{background:none;border:1px solid #5a2030;color:var(--red)}
+.btn.full{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat small{display:block;font:600 11px var(--mono);letter-spacing:.1em;color:var(--dim);text-transform:uppercase}
+.stat b{font:800 22px system-ui;color:var(--acc)}
+.bar{height:12px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--acc);box-shadow:0 0 10px var(--acc);transition:width .4s}
+.prog{display:flex;justify-content:space-between;font:600 13px var(--mono);color:var(--dim);margin-bottom:6px}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.chk:last-child{border-bottom:0}
+.chk input{appearance:none;flex:0 0 26px;width:26px;height:26px;min-height:26px;padding:0;border:2px solid var(--acc);border-radius:7px;margin-top:1px;cursor:pointer;position:relative;background:#06101c}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#041;font-weight:900}
+.chk.done span{color:var(--dim);text-decoration:line-through}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+.tabs button{flex:0 0 auto;min-height:42px;padding:0 14px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--dim);font:700 14px system-ui;cursor:pointer}
+.tabs button.on{background:var(--acc);color:#021018;border-color:var(--acc)}
+.pill{display:inline-block;font:700 11px var(--mono);padding:3px 8px;border-radius:99px;border:1px solid var(--line);color:var(--dim);text-transform:uppercase;letter-spacing:.06em}
+.pill.g{color:var(--green);border-color:#1f5e44}.pill.a{color:var(--amber);border-color:#5e4a1f}.pill.r{color:var(--red);border-color:#5a2030}.pill.c{color:var(--cyan);border-color:#1f4a5e}
+.muted{color:var(--dim);font-size:14px}
+.note{border-left:3px solid var(--amber);background:#1a1407;padding:10px 14px;border-radius:0 10px 10px 0;margin:10px 0;color:#f3dcb0;font-size:14px}
+.empty{color:var(--dim);text-align:center;padding:16px;border:1px dashed var(--line);border-radius:12px}
+.list .item{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.list .item:last-child{border-bottom:0}
+details{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin:12px 0}
+details>summary{list-style:none;cursor:pointer;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::after{content:"＋";color:var(--acc);font-weight:900}
+details[open]>summary::after{content:"－"}
+details .in{padding:0 16px 16px}
+@media (max-width:420px){.grid2{grid-template-columns:1fr 1fr}.stat b{font-size:19px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../../">← Hub</a>
+<div class="tag">// Cyber</div>
+<h1>Cyber <span>Tracker</span></h1>
+<p class="sub">Study sessions, weekly target and streak, TryHackMe, cert progress, homelab and SOC skills.</p>
+<div class="card"><div class="grid2" id="dash"></div><div class="prog" style="margin-top:12px"><span id="wTxt"></span><span id="wPct"></span></div><div class="bar"><i id="wBar"></i></div></div>
+<div class="tabs" id="tabs"><button data-t="log" class="on">Study log</button><button data-t="thm">TryHackMe</button><button data-t="certs">Certs</button><button data-t="lab">Homelab</button><button data-t="soc">SOC skills</button></div>
+<div id="view"></div>
+<div class="card"><div class="row"><button class="btn ghost small" id="exp">Copy backup</button><button class="btn ghost small" id="imp">Restore backup</button></div><p class="muted" id="msg"></p></div>
+</div>
+<script>
+(function(){
+function load(k,d){try{var v=JSON.parse(localStorage.getItem(k)||'null');return v==null?d:v;}catch(e){return d;}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function ymd(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function today(){return ymd(new Date());}
+function ukDate(s){if(!s)return '';var p=s.split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s;}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+function pct(n){n=+n;return isFinite(n)?Math.max(0,Math.min(100,Math.round(n))):0;}
+var K='orion-cyber-tracker-v1';
+var SOC=['Reading Windows event logs','Using a SIEM (Splunk / Wazuh / Sentinel)','Networking (TCP/IP, DNS, ports)','Linux command line','Windows internals and PowerShell','Incident response process','Phishing analysis','Writing a triage note','MITRE ATT&CK basics','Wireshark / packet reading'];
+var LAB=['Install VirtualBox or Hyper-V','Build a Windows VM','Build a Linux VM','Install Wazuh','Install Sysmon with a good config','Forward logs into the SIEM','Run a port scan with Nmap and find it in the logs','Simulate a brute force and detect it'];
+var S=load(K,{target:5,sessions:[],thm:[],certs:[],lab:{},soc:{}});
+S.target=+S.target>0?+S.target:5;['sessions','thm','certs'].forEach(function(k){if(!Array.isArray(S[k]))S[k]=[];});S.lab=S.lab||{};S.soc=S.soc||{};
+var tab='log';
+function commit(){save(K,S);render();}
+function monday(d){var x=new Date(d.getFullYear(),d.getMonth(),d.getDate());var w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);return x;}
+function weekMins(){var m=ymd(monday(new Date())),t=0;S.sessions.forEach(function(s){if(s.date>=m)t+=+s.mins||0;});return t;}
+function streak(){var days={};S.sessions.forEach(function(s){if((+s.mins||0)>0)days[s.date]=1;});var d=new Date(),n=0;if(!days[ymd(d)])d.setDate(d.getDate()-1);while(days[ymd(d)]){n++;d.setDate(d.getDate()-1);}return n;}
+function hrs(m){return (m/60).toFixed(1);}
+function stat(l,v){return '<div class="stat"><small>'+l+'</small><b>'+v+'</b></div>';}
+function bar(p){return '<div class="bar" style="margin-top:6px"><i style="width:'+p+'%"></i></div>';}
+function doneCount(o,list){return list.filter(function(x,i){return o[i];}).length;}
+function overall(){
+  var parts=[];
+  parts.push(S.thm.length?S.thm.reduce(function(s,x){return s+pct(x.p);},0)/S.thm.length:0);
+  parts.push(S.certs.length?S.certs.reduce(function(s,x){return s+pct(x.p);},0)/S.certs.length:0);
+  parts.push(doneCount(S.lab,LAB)/LAB.length*100);
+  parts.push(doneCount(S.soc,SOC)/SOC.length*100);
+  return Math.round(parts.reduce(function(a,b){return a+b;},0)/parts.length);
+}
+function dash(){
+  var w=weekMins(),t=S.target*60,p=Math.min(100,Math.round(w/t*100));
+  $('dash').innerHTML=stat('This week',hrs(w)+' h')+stat('Streak',streak()+' day'+(streak()===1?'':'s'))+stat('Weekly target',S.target+' h')+stat('Overall',overall()+'%');
+  $('wTxt').textContent=hrs(w)+' of '+S.target+' hours this week';$('wPct').textContent=p+'%';$('wBar').style.width=p+'%';
+}
+function viewLog(){
+  var h='<div class="card"><h2>Log a study session</h2><div class="grid2"><div><label class="f">Date</label><input id="l_d" type="date" value="'+today()+'"></div><div><label class="f">Minutes</label><input id="l_m" type="number" inputmode="numeric" min="1" max="1440" placeholder="45"></div></div><label class="f">Topic</label><input id="l_t" maxlength="100" placeholder="e.g. Sysmon event IDs"><br><br><button class="btn full" id="l_add">Add session</button></div>';
+  h+='<div class="card"><h2>Weekly target</h2><div class="row"><input id="tg" type="number" inputmode="decimal" min="1" max="80" step="0.5" value="'+S.target+'"><span class="muted" style="flex:0 0 auto">hours per week</span></div></div>';
+  h+='<div class="card"><h2>Sessions</h2>';
+  if(!S.sessions.length)h+='<div class="empty">No sessions yet.</div>';
+  else h+='<div class="list">'+S.sessions.slice().sort(function(a,b){return a.date<b.date?1:-1;}).slice(0,40).map(function(s){return '<div class="item"><div><b>'+esc(s.topic||'Study')+'</b><br><span class="muted">'+ukDate(s.date)+' · '+s.mins+' min</span></div><button class="btn danger small" data-del="sessions:'+s.id+'">✕</button></div>';}).join('')+'</div>';
+  return h+'</div>';
+}
+function viewProg(key,label,ph){
+  var h='<div class="card"><h2>Add '+label+'</h2><div class="row"><input id="p_n" maxlength="100" placeholder="'+ph+'"><button class="btn" id="p_add" style="flex:0 0 auto">Add</button></div></div><div class="card"><h2>'+label+'s</h2>';
+  if(!S[key].length)h+='<div class="empty">Nothing here yet.</div>';
+  else h+=S[key].map(function(x){return '<div style="padding:10px 0;border-bottom:1px solid var(--line)"><div class="row" style="flex-wrap:nowrap"><b style="flex:1">'+esc(x.name)+'</b><span class="pill c" style="flex:0 0 auto">'+pct(x.p)+'%</span><button class="btn danger small" style="flex:0 0 auto" data-del="'+key+':'+x.id+'">✕</button></div>'+bar(pct(x.p))+'<input type="range" min="0" max="100" step="5" value="'+pct(x.p)+'" data-rg="'+key+':'+x.id+'" style="margin-top:6px;padding:0;min-height:32px"></div>';}).join('');
+  return h+'</div>';
+}
+function viewList(o,list,kind,title){
+  var n=doneCount(o,list);
+  return '<div class="card"><h2>'+title+'</h2><div class="prog"><span>'+n+' / '+list.length+'</span><span>'+Math.round(n/list.length*100)+'%</span></div>'+bar(n/list.length*100)+list.map(function(x,i){return '<label class="chk'+(o[i]?' done':'')+'"><input type="checkbox" data-ck="'+kind+':'+i+'"'+(o[i]?' checked':'')+'><span>'+esc(x)+'</span></label>';}).join('')+'</div>';
+}
+function render(){
+  dash();
+  [].forEach.call(document.querySelectorAll('#tabs button'),function(b){b.classList.toggle('on',b.dataset.t===tab);});
+  $('view').innerHTML=tab==='log'?viewLog():tab==='thm'?viewProg('thm','room or path','e.g. SOC Level 1 path'):tab==='certs'?viewProg('certs','certification','e.g. CompTIA Security+ SY0-701'):tab==='lab'?viewList(S.lab,LAB,'lab','Homelab tasks'):viewList(S.soc,SOC,'soc','SOC skills checklist');
+}
+function val(id){var e=$(id);return e?e.value.trim():'';}
+$('tabs').addEventListener('click',function(e){if(e.target.dataset.t){tab=e.target.dataset.t;render();}});
+$('view').addEventListener('click',function(e){
+  var t=e.target,id=t.id;
+  if(id==='l_add'){var m=Math.round(+val('l_m'));if(!(m>0)||!val('l_d'))return;S.sessions.push({id:uid(),date:val('l_d'),mins:Math.min(m,1440),topic:val('l_t')});commit();}
+  else if(id==='p_add'){if(!val('p_n'))return;S[tab].push({id:uid(),name:val('p_n'),p:0});commit();}
+  else if(t.dataset.del){var p=t.dataset.del.split(':');if(confirm('Remove this?')){S[p[0]]=S[p[0]].filter(function(x){return x.id!==p[1];});commit();}}
+});
+$('view').addEventListener('change',function(e){
+  var t=e.target;
+  if(t.dataset.ck){var p=t.dataset.ck.split(':');S[p[0]][p[1]]=t.checked;commit();}
+  else if(t.id==='tg'){var v=+t.value;if(v>0){S.target=v;commit();}}
+});
+$('view').addEventListener('input',function(e){
+  var t=e.target;
+  if(t.dataset.rg){var p=t.dataset.rg.split(':'),x=S[p[0]].filter(function(y){return y.id===p[1];})[0];if(x){x.p=+t.value;save(K,S);dash();var c=t.parentNode;c.querySelector('.pill').textContent=x.p+'%';c.querySelector('.bar i').style.width=x.p+'%';}}
+});
+$('exp').addEventListener('click',function(){try{navigator.clipboard.writeText(JSON.stringify(S)).then(function(){$('msg').textContent='Backup copied.';},function(){$('msg').textContent='Could not copy.';});}catch(e){$('msg').textContent='Could not copy.';}});
+$('imp').addEventListener('click',function(){var j=prompt('Paste your backup text:');if(!j)return;try{var o=JSON.parse(j);if(!Array.isArray(o.sessions)||!Array.isArray(o.thm)||!Array.isArray(o.certs))throw 0;S=o;S.lab=S.lab||{};S.soc=S.soc||{};S.target=+S.target>0?+S.target:5;commit();$('msg').textContent='Restored.';}catch(e){$('msg').textContent='That backup did not look right.';}});
+render();
+})();
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('../../sw.js').catch(function(){});});}</script>
+</body>
+</html>

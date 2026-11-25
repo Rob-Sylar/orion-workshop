@@ -4,9 +4,9 @@ Add ideas here during the day, one per line. Night Shift builds up to 3 each nig
 Start a line with `study:` for a cyber study guide.
 
 ## Queue
-- Financial tracker: monthly budget with income and spending categories (£), bills and subscriptions list with due dates, savings goals with progress bars (house deposit first), a debts section, and a dashboard at the top showing money left this month and savings progress. Keep everything on-device only, with no account numbers or personal details.
 
 ## Done
+- [x] 2026-11-25 Financial tracker: monthly budget with income and spending categories (£), bills and subscriptions list with due dates, savings goals with progress bars (house deposit first), a debts section, and a dashboard at the top showing money left this month and savings progress. Keep everything on-device only, with no account numbers or personal details. → https://rob-sylar.github.io/orion-workshop/missions/financial-tracker/
 - [x] 2026-11-22 Fuel cost calculator for my commute → https://rob-sylar.github.io/orion-workshop/missions/fuel-cost-calculator/
 - [x] 2026-11-23 study: Windows Event Log and Sysmon basics for SOC work → https://rob-sylar.github.io/orion-workshop/missions/study-windows-event-logs-sysmon/
 - [x] 2026-11-23 Career tracker: log job applications (company, role, date applied, status: applied/interview/offer/rejected), track courses and certifications with % progress, a skills checklist, and goals with target dates and progress bars. Dashboard at the top showing totals. → https://rob-sylar.github.io/orion-workshop/missions/career-tracker/

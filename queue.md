@@ -4,6 +4,7 @@ Add ideas here during the day, one per line. Night Shift builds up to 3 each nig
 Start a line with `study:` for a cyber study guide.
 
 ## Queue
+- Homelab planner: plan a blue-team homelab for SOC practice. Hardware and VM list (name, role, RAM/CPU/disk allocation) with a running total against my PC's resources, a network diagram that updates from the VM list, build phases as a checklist (hypervisor, Windows target, Linux, Sysmon, SIEM, log forwarding, attack simulation), a software and downloads list, a cost tracker in £, and a lab notes log. Keep it on-device only and put no passwords or IPs from my real network in it.
 
 ## Done
 - [x] 2026-11-25 Financial tracker: monthly budget with income and spending categories (£), bills and subscriptions list with due dates, savings goals with progress bars (house deposit first), a debts section, and a dashboard at the top showing money left this month and savings progress. Keep everything on-device only, with no account numbers or personal details. → https://rob-sylar.github.io/orion-workshop/missions/financial-tracker/
